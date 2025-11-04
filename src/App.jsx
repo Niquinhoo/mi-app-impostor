@@ -81,7 +81,21 @@ const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial
 const INITIAL_WORD_PACKS = [
     { id: 'comida', name: 'Comida Deliciosa', words: ['Taco', 'Pizza', 'Sushi', 'Hamburguesa', 'Ensalada', 'Sopa', 'Postre'] },
     { id: 'animales', name: 'Animales Salvajes', words: ['León', 'Tigre', 'Elefante', 'Jirafa', 'Mono', 'Delfín', 'Oso'] },
-    { id: 'hogar', name: 'Objetos del Hogar', words: ['Sofá', 'Ventana', 'Mesa', 'Refrigerador', 'Lámpara', 'Espejo', 'Cama'] }
+    { id: 'hogar', name: 'Objetos del Hogar', words: ['Sofá', 'Ventana', 'Mesa', 'Refrigerador', 'Lámpara', 'Espejo', 'Cama'] },
+    { 
+      id: 'futbol', 
+      name: 'Jugadores de Fútbol', 
+      words: [
+        "Messi", "Luis Suarez", "Florian Wirtz", "Vini", "Neymar", "De paul", 
+        "Chango zeballos", "Mastantuono", "Garnacho", "Merentiel", "Colo barco", 
+        "Isak", "Borja", "Pipa higuain", "Luis diaz", "Harry kane", "Mbappe", 
+        "Thiago Alcantara", "Iñigo Martinez", "Ter stegen", "Estevao", 
+        "Enzo Fernandez", "Sterling", "Pulisic", "Reus", "Valverde", 
+        "Van der sar", "Maradona", "James", "Antony", "Pique", "Rooney", 
+        "Dybala", "Pepe Sand", "Van dijk", "Alexander Arnold", "Darwin nunez", 
+        "Zidane", "Kempes", "Cruyff", "Thomas Muller"
+      ] 
+    }
 ];
 
 // --- RUTAS DE FIRESTORE (igual) ---
@@ -249,21 +263,33 @@ const App = () => {
 
     // --- 2. "Backend Setup": Cargar Packs (igual) ---
     const seedWordPacks = useCallback(async (firestore) => {
+        console.log("Verificando packs de palabras...");
         const packsRef = collection(firestore, getWordPacksCollectionPath());
         const snapshot = await getDocs(query(packsRef));
-        if (snapshot.empty) {
-            console.log("Cargando packs de palabras iniciales...");
+        
+        // Obtenemos los IDs de los packs que YA están en la base de datos
+        const remotePackIds = new Set(snapshot.docs.map(doc => doc.id));
+        
+        // Filtramos los packs locales que FALTAN en la base de datos
+        const missingPacks = INITIAL_WORD_PACKS.filter(pack => !remotePackIds.has(pack.id));
+
+        if (missingPacks.length > 0) {
+            console.log(`Cargando ${missingPacks.length} pack(s) de palabras nuevos...`);
             const batch = writeBatch(firestore);
-            INITIAL_WORD_PACKS.forEach(pack => {
+            missingPacks.forEach(pack => {
                 const docRef = doc(packsRef, pack.id);
                 batch.set(docRef, pack);
             });
-            try { await batch.commit(); } catch (e) { console.error("Error cargando packs:", e); }
+            try { 
+                await batch.commit(); 
+                console.log("¡Nuevos packs cargados!");
+            } catch (e) { 
+                console.error("Error cargando nuevos packs:", e); 
+            }
         } else {
-            console.log("Los packs de palabras ya existen.");
+            console.log("Todos los packs de palabras están actualizados.");
         }
-    }, []);
-
+    }, []); 
     // --- 3. Cargar datos (Packs y Listeners) ---
     
     // --- ¡CORRECCIÓN! ---
