@@ -188,6 +188,7 @@ const PlayerAssignment = ({ player }) => {
         </Paper>
     );
 };
+// --- ¡AQUÍ TERMINA PlayerAssignment, ESTA VEZ SIN ERRORES! ---
 
 // --- COMPONENTE PRINCIPAL (Modificado) ---
 const App = () => {
@@ -264,31 +265,45 @@ const App = () => {
     }, []);
 
     // --- 3. Cargar datos (Packs y Listeners) ---
-    // (Esta función la moví fuera del useEffect para poder usarla en 'handleLeaveRoom')
-    const resetLocalState = () => {
+    
+    // --- ¡CORRECCIÓN! ---
+    // resetLocalState ahora está envuelto en useCallback para estabilizarlo
+    const resetLocalState = useCallback(() => {
         setView('HOME'); 
         setRoomId(null); 
         setRoomData(null); 
         setPlayers([]); 
         setError(null);
-    };
+    }, []); // Sin dependencias
 
+    // --- ¡CORRECCIÓN! ---
+    // handleLeaveRoom actualizado para no depender de `roomData` y corregir la lógica de borrado
     const handleLeaveRoom = useCallback(async () => {
         if (!db || !userId || !roomId) {
             resetLocalState();
             return;
         }
         setLoading(true);
+
+        // Obtenemos los datos de la sala en este momento, en lugar de depender del estado
+        const roomDocRef = doc(db, getRoomDocPath(roomId));
+        const roomSnap = await getDoc(roomDocRef);
+        const currentRoomData = roomSnap.data();
+
         try {
-            if (roomData && roomData.hostId === userId) {
+            if (currentRoomData && currentRoomData.hostId === userId) {
                 console.log("Cerrando la sala como Host...");
-                const roomRef = doc(db, getRoomDocPath(roomId));
-                await deleteDoc(roomRef); // Esto debería borrar la sub-colección, pero lo hacemos manual por si acaso
+                
+                // --- ¡LÓGICA CORREGIDA! ---
+                // 1. Borrar jugadores PRIMERO
                 const playersRef = collection(db, getPlayersCollectionPath(roomId));
                 const playersSnap = await getDocs(playersRef);
                 const batch = writeBatch(db);
                 playersSnap.docs.forEach(playerDoc => batch.delete(playerDoc.ref));
                 await batch.commit();
+
+                // 2. Borrar la sala DESPUÉS
+                await deleteDoc(roomDocRef);
 
             } else {
                 console.log("Saliendo de la sala como Jugador...");
@@ -297,10 +312,15 @@ const App = () => {
             }
         } catch (error) { console.error("Error al salir de la sala:", error); }
         
-        resetLocalState();
+        resetLocalState(); // Función memoizada
         setLoading(false);
-    }, [db, userId, roomId, roomData]);
+    }, [db, userId, roomId, resetLocalState]); // Ya no depende de roomData
 
+
+    // --- ¡CORRECCIÓN! ---
+    // useEffect dividido en dos: uno para los packs, otro para la sala.
+    
+    // useEffect para Cargar Packs de Palabras
     useEffect(() => {
         if (!db || !isAuthReady) return;
         seedWordPacks(db);
@@ -309,7 +329,7 @@ const App = () => {
             const packs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setWordPacks(packs);
             if (packs.length > 0 && !selectedPackId) {
-                setSelectedPackId(packs[0].id);
+                setSelectedPackId(packs[0].id); // Solo se ejecuta la primera vez
             }
             setLoading(false);
         }, (error) => {
@@ -317,27 +337,44 @@ const App = () => {
             setError("No se pudieron cargar los packs de palabras.");
         });
 
-        let unsubscribeRoom = () => {};
-        let unsubscribePlayers = () => {};
-        if (roomId) {
-            const roomRef = doc(db, getRoomDocPath(roomId));
-            unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
-                if (docSnap.exists()) setRoomData(docSnap.data());
-                else {
-                    console.log("La sala fue eliminada.");
-                    resetLocalState(); // La sala fue borrada por el Host
-                }
-            }, (error) => {
-                console.error("Error escuchando la sala:", error); 
-                handleLeaveRoom();
-            });
-            const playersRef = collection(db, getPlayersCollectionPath(roomId));
-            unsubscribePlayers = onSnapshot(playersRef, (snapshot) => {
-                setPlayers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            }, (error) => console.error("Error escuchando jugadores:", error));
+        return () => unsubscribePacks();
+    }, [db, isAuthReady, seedWordPacks]); // Ya no depende de selectedPackId
+
+    // useEffect para Listeners de Sala y Jugadores
+    useEffect(() => {
+        // Si no hay sala, no hacer nada y limpiar estados.
+        if (!db || !roomId) {
+            setRoomData(null);
+            setPlayers([]);
+            return;
         }
-        return () => { unsubscribePacks(); unsubscribeRoom(); unsubscribePlayers(); };
-    }, [db, isAuthReady, seedWordPacks, roomId, selectedPackId, handleLeaveRoom]); // 'handleLeaveRoom' ahora es dependencia
+
+        // 1. Listener de la Sala
+        const roomRef = doc(db, getRoomDocPath(roomId));
+        const unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
+            if (docSnap.exists()) {
+                setRoomData(docSnap.data());
+            } else {
+                console.log("La sala fue eliminada.");
+                resetLocalState(); // La sala fue borrada por el Host
+            }
+        }, (error) => {
+            console.error("Error escuchando la sala:", error); 
+            handleLeaveRoom(); // Llamar a la función memoizada
+        });
+
+        // 2. Listener de Jugadores
+        const playersRef = collection(db, getPlayersCollectionPath(roomId));
+        const unsubscribePlayers = onSnapshot(playersRef, (snapshot) => {
+            setPlayers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        }, (error) => console.error("Error escuchando jugadores:", error));
+
+        // Función de limpieza
+        return () => { 
+            unsubscribeRoom(); 
+            unsubscribePlayers(); 
+        };
+    }, [db, roomId, resetLocalState, handleLeaveRoom]); // Depende solo de db, roomId y las funciones memoizadas
     
 
     // --- ¡NUEVO! useEffect para Contar Votos (SOLO EL HOST) ---
@@ -916,9 +953,18 @@ const App = () => {
 
     // --- Renderizado Principal (Navegador de Vistas) ---
     const renderView = () => {
-        if (loading || !isAuthReady || (view !== 'HOME' && !roomData)) {
+        // --- ¡CORRECCIÓN! ---
+        // Se ajusta la condición de carga
+        if (loading && view === 'HOME') {
+             return renderLoading();
+        }
+        if (!isAuthReady) {
             return renderLoading();
         }
+        if (view !== 'HOME' && !roomData) {
+            return renderLoading();
+        }
+
         switch(view) {
             case 'HOST': return renderHost();
             case 'PLAYER': return renderPlayer();
