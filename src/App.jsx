@@ -79,25 +79,23 @@ const firebaseConfig = {
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'impostor-game-default';
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 const INITIAL_WORD_PACKS = [
-    { id: 'comida', name: 'Comida Deliciosa', words: ['Taco', 'Pizza', 'Sushi', 'Hamburguesa', 'Ensalada', 'Sopa', 'Postre'] },
-    { id: 'animales', name: 'Animales Salvajes', words: ['León', 'Tigre', 'Elefante', 'Jirafa', 'Mono', 'Delfín', 'Oso'] },
-    { id: 'hogar', name: 'Objetos del Hogar', words: ['Sofá', 'Ventana', 'Mesa', 'Refrigerador', 'Lámpara', 'Espejo', 'Cama'] },
     { 
       id: 'futbol', 
       name: 'Jugadores de Fútbol', 
       words: [
         "Messi", "Luis Suarez", "Florian Wirtz", "Vini", "Neymar", "De paul", 
-        "Chango zeballos", "Mastantuono", "Garnacho", "Merentiel", "Colo barco", 
-        "Isak", "Borja", "Pipa higuain", "Luis diaz", "Harry kane", "Mbappe", 
-        "Thiago Alcantara", "Iñigo Martinez", "Ter stegen", "Estevao", 
-        "Enzo Fernandez", "Sterling", "Pulisic", "Reus", "Valverde", 
-        "Van der sar", "Maradona", "James", "Antony", "Pique", "Rooney", 
-        "Dybala", "Pepe Sand", "Van dijk", "Alexander Arnold", "Darwin nunez", 
-        "Zidane", "Kempes", "Cruyff", "Thomas Muller"
+        "Chango Zeballos", "Mastantuono", "Garnacho", "Merentiel", "Colo barco", 
+        "Borja", "Pipa higuain", "Luis Diaz", "Harry kane", "Mbappe", 
+        "Ter stegen", "Enzo Fernandez", "Sterling", "Pulisic", "Reus", "Valverde", 
+        "Van der sar", "Maradona", "James Rodriguez", "Antony", "Pique", "Rooney", 
+        "Dybala", "Pepe Sand", "Van dijk", "Alexander Arnold",  
+        "Zidane", "Kempes", "Cruyff", "Thomas Muller", "Jude Belligham", "Haaland",
+        "Julian Alvarez", "Lamine Yamal", "Cole Palmer", "Lautaro Martinez", "Dibu Martinez",
+        "Mac Alister", "Ronaldo R9", "Ronaldo CR7", "Falcao", "Iniesta", "Neuer", "Di Maria", "Pedri", "Dembele", ""
       ] 
     },
 
-        {
+    {
       id: 'marvel_rivals',
       name: 'Héroes de Marvel Rivals',
       words: [
