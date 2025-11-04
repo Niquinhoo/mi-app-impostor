@@ -146,13 +146,13 @@ const getPlayerDocPath = (roomId, userId) => `${getPlayersCollectionPath(roomId)
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#e58e46ff', // Indigo
+            main: '#b95b08ff', 
         },
         secondary: {
             main: '#10b924ff', // Green
         },
         background: {
-            default: '#f3f4f6', // Gray 100
+            default: '#e0e0e0ff', // Gray 100
         },
     },
     typography: {
@@ -1048,7 +1048,7 @@ const App = () => {
                                 </IconButton>
                             )}
                             <Typography variant="h6" component="h1" sx={{ flexGrow: 1, textAlign: view === 'HOME' ? 'center' : 'left', fontWeight: 'bold' }}>
-                                El Juego del Impostor
+                                El Impostor 😝
                             </Typography>
                         </Toolbar>
                     </AppBar>
