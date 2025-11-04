@@ -95,6 +95,45 @@ const INITIAL_WORD_PACKS = [
         "Dybala", "Pepe Sand", "Van dijk", "Alexander Arnold", "Darwin nunez", 
         "Zidane", "Kempes", "Cruyff", "Thomas Muller"
       ] 
+    },
+
+        {
+      id: 'marvel_rivals',
+      name: 'Héroes de Marvel Rivals',
+      words: [
+        "Magik", "Peni Parker", "Rocket Raccoon", "Angela", "Mantis", "Storm",
+        "Hela", "Hulk", "Black Panther", "Star Lord", "Thor", "Psylocke", 
+        "Doctor Strange", "Mister Fantastic", "Iron Fist", "Venom", "Spider Man",
+        "Captain America", "Iron Man", "Emma Frost", "Jeff the Shark", "Ultron",
+        "Hawkeye", "Groot", "Winter Soldier", "Cloak & Dagger", "Magneto",
+        "Moon Knight", "Invisible Woman", "Adam Warlock", "Namor", "Blade",
+        "Luna Snow", "Scarlet Witch", "Punisher", "Loki", "The Thing", "Phoenix",
+        "Wolverine", "Human Torch", "Squirrel Girl", "Black Widow"
+      ]
+    },
+
+    {
+      id: 'lol_campeones',
+      name: 'Campeones de LOL',
+      words: [
+        "Kled", "Quinn", "Malphite", "Ziggs", "Janna", "Anivia", "Sona", "Urgot", "Singed", "Kayle",
+        "Milio", "Nami", "Ashe", "Morgana", "Rek'Sai", "Briar", "Jinx", "Jax", "LeBlanc", "Akshan",
+        "Vex", "Kindred", "Soraka", "Warwick", "Diana", "Vel'Koz", "Nunu & Willump", "Vayne", "Trundle", "Poppy",
+        "Shen", "Pantheon", "Sett", "Katarina", "Fiora", "Xerath", "Syndra", "Vladimir", "Fizz", "Qiyana",
+        "Zoe", "Seraphine", "Garen", "Kha'Zix", "Master Yi", "Leona", "Bard", "Thresh", "Jarvan IV", "Irelia",
+        "Karma", "Smolder", "Kai'Sa", "Draven", "Lee Sin", "Sylas", "Caitlyn", "Udyr", "Fiddlesticks", "Zac",
+        "Zilean", "Volibear", "Veigar", "Kassadin", "Evelynn", "Ekko", "Ornn", "Amumu", "Zyra", "Riven",
+        "Talon", "Hwei", "Malzahar", "Camille", "Sion", "Lux", "Kayn", "Hecarim", "Twitch", "Miss Fortune",
+        "Tristana", "Mordekaiser", "Elise", "Senna", "Lissandra", "Lillia", "Brand", "Samira", "Gwen", "Cho'Gath",
+        "Ahri", "Zeri", "Teemo", "Gangplank", "Sivir", "Braum", "Shaco", "Wukong", "Darius", "Viego",
+        "Lucian", "Yasuo", "Pyke", "Xayah", "Zed", "Nautilus", "Viktor", "Blitzcrank", "Graves", "Ambessa",
+        "Aatrox", "Lulu", "Akali", "Mel", "Rell", "Gragas", "Naafiri", "Gnar", "Nocturne", "Xin Zhao",
+        "Rakan", "Tryndamere", "Yorick", "Neeko", "Jayce", "Aphelios", "Renekton", "Nasus", "Twisted Fate", "Jhin",
+        "Aurora", "Galio", "Orianna", "Cassiopeia", "Nilah", "Taric", "Kog'Maw", "Rammus", "Kennen", "Bel'Veth",
+        "Olaf", "Maokai", "Ivern", "Annie", "Ryze", "Aurelion Sol", "Illaoi", "Karthus", "Renata Glasc", "Tahm Kench",
+        "Shyvana", "Kalista", "Dr. Mundo", "Alistar", "Sejuani", "Nidalee", "Taliyah", "Vi", "Rengar", "Ezreal",
+        "Yone", "Rumble", "Corki", "Swain", "Yuumi", "Yunara", "Varus", "K'Sante", "Azir"
+      ]
     }
 ];
 
