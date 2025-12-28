@@ -82,19 +82,82 @@ const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial
 // --- PACKS DE PALABRAS ---
 const INITIAL_WORD_PACKS = [
     { 
-      id: 'futbol', 
-      name: 'Jugadores de Fútbol', 
-      words: [
-        "Messi", "Luis Suarez", "Florian Wirtz", "Vini", "Neymar", "De paul", 
-        "Chango zeballos", "Mastantuono", "Garnacho", "Merentiel", "Colo barco", 
-        "Isak", "Borja", "Pipa higuain", "Luis diaz", "Harry kane", "Mbappe", 
-        "Thiago Alcantara", "Iñigo Martinez", "Ter stegen", "Estevao", 
-        "Enzo Fernandez", "Sterling", "Pulisic", "Reus", "Valverde", 
-        "Van der sar", "Maradona", "James", "Antony", "Pique", "Rooney", 
-        "Dybala", "Pepe Sand", "Van dijk", "Alexander Arnold", "Darwin nunez", 
-        "Zidane", "Kempes", "Cruyff", "Thomas Muller"
-      ] 
-    },
+        id: 'futbol', 
+        name: 'Jugadores de Fútbol', 
+        words: [
+          // Leyendas e internacionales muy conocidos
+          "Lionel Messi",
+          "Cristiano Ronaldo",
+          "Diego Maradona",
+          "Pelé",
+          "Zinedine Zidane",
+          "Ronaldinho",
+          "Ronaldo nazario",
+          "Franz Beckenbauer",
+          "Paolo Maldini",
+      
+          // Figuras muy conocidas (últimos años)
+          "Neymar",
+          "Luis Suárez",
+          "Andrés Iniesta",
+          "Sergio Ramos",
+          "Gianluigi Buffon",
+          "Iker Casillas",
+          "Manuel Neuer",
+          "Keylor navas",
+          
+      
+      
+          
+      
+          // Estrellas actuales súper mediáticas
+          "Kylian Mbappé",
+          "Erling Haaland",
+          "Kevin De Bruyne",
+          "Mohamed Salah",
+          "Robert Lewandowski",
+          "Karim Benzema",
+          "Luka Modrić",
+          "Vinícius Jr",
+          "Rodri",
+          "Jude Bellingham",
+          "Lamine Yamal",
+      
+          // Selección Argentina
+          "Ángel Di María",
+          "Sergio Agüero",
+          "Carlos Tévez",
+          "Juan Román Riquelme",
+          "Javier Mascherano",
+          "Cuti romero",
+          "Nicolas otamendi",
+           "Rodrigo de paul",
+          "Emiliano Martínez",
+          "Paulo Dybala",
+          "Enzo Fernández",
+          "Leo paredes",
+          "Julian alvarez",
+          "Lautaro martinez",
+      
+          // Boca Juniors
+          "Cavani",
+          "Valentin Barco",
+          "Chiquito romero",
+          "Benedetto",
+          "Martín palermo",
+          "Sebastian Villa",
+          "Pique",
+          "Icardi",
+        
+          // River Plate
+          "Marcelo Gallardo",
+          "Leonardo Ponzio",
+          "Pity Martínez",
+          "Franco Armani",
+          "Montiel",
+          "Juanfer quintero"
+        ] 
+      },
     {
       id: 'marvel_rivals',
       name: 'Héroes de Marvel Rivals',
