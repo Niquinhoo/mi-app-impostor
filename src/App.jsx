@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    onSnapshot, 
-    collection, 
-    query, 
-    getDocs, 
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    onSnapshot,
+    collection,
+    query,
+    getDocs,
     writeBatch,
     getDoc,
     deleteDoc,
@@ -68,161 +68,161 @@ import {
 
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
-  apiKey: "AIzaSyCFhg7_5B2G6a3N0aVbL3I48mNhuIomssM",
-  authDomain: "impostor-test-9eaef.firebaseapp.com",
-  projectId: "impostor-test-9eaef",
-  storageBucket: "impostor-test-9eaef.firebasestorage.app",
-  messagingSenderId: "1049608465303",
-  appId: "1:1049608465303:web:aa6c34611bc9cc206972d2",
-  measurementId: "G-FBP9ND9YL6"
+    apiKey: "AIzaSyCFhg7_5B2G6a3N0aVbL3I48mNhuIomssM",
+    authDomain: "impostor-test-9eaef.firebaseapp.com",
+    projectId: "impostor-test-9eaef",
+    storageBucket: "impostor-test-9eaef.firebasestorage.app",
+    messagingSenderId: "1049608465303",
+    appId: "1:1049608465303:web:aa6c34611bc9cc206972d2",
+    measurementId: "G-FBP9ND9YL6"
 };
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'impostor-game-default';
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 // --- PACKS DE PALABRAS ---
 const INITIAL_WORD_PACKS = [
-    { 
-        id: 'futbol', 
-        name: 'Jugadores de Fútbol', 
-        words: [
-          // Leyendas e internacionales muy conocidos
-          "Lionel Messi",
-          "Cristiano Ronaldo",
-          "Diego Maradona",
-          "Pelé",
-          "Zinedine Zidane",
-          "Ronaldinho",
-          "Ronaldo nazario",
-          "Franz Beckenbauer",
-          "Paolo Maldini",
-      
-          // Figuras muy conocidas (últimos años)
-          "Neymar",
-          "Luis Suárez",
-          "Andrés Iniesta",
-          "Sergio Ramos",
-          "Gianluigi Buffon",
-          "Iker Casillas",
-          "Manuel Neuer",
-          "Keylor navas",
-          
-      
-      
-          
-      
-          // Estrellas actuales súper mediáticas
-          "Kylian Mbappé",
-          "Erling Haaland",
-          "Kevin De Bruyne",
-          "Mohamed Salah",
-          "Robert Lewandowski",
-          "Karim Benzema",
-          "Luka Modrić",
-          "Vinícius Jr",
-          "Rodri",
-          "Jude Bellingham",
-          "Lamine Yamal",
-      
-          // Selección Argentina
-          "Ángel Di María",
-          "Sergio Agüero",
-          "Carlos Tévez",
-          "Juan Román Riquelme",
-          "Javier Mascherano",
-          "Cuti romero",
-          "Nicolas otamendi",
-           "Rodrigo de paul",
-          "Emiliano Martínez",
-          "Paulo Dybala",
-          "Enzo Fernández",
-          "Leo paredes",
-          "Julian alvarez",
-          "Lautaro martinez",
-      
-          // Boca Juniors
-          "Cavani",
-          "Valentin Barco",
-          "Chiquito romero",
-          "Benedetto",
-          "Martín palermo",
-          "Sebastian Villa",
-          "Pique",
-          "Icardi",
-        
-          // River Plate
-          "Marcelo Gallardo",
-          "Leonardo Ponzio",
-          "Pity Martínez",
-          "Franco Armani",
-          "Montiel",
-          "Juanfer quintero"
-        ] 
-      },
     {
-      id: 'marvel_rivals',
-      name: 'Héroes de Marvel Rivals',
-      words: [
-        "Magik", "Peni Parker", "Rocket Raccoon", "Angela", "Mantis", "Storm",
-        "Hela", "Hulk", "Black Panther", "Star Lord", "Thor", "Psylocke", 
-        "Doctor Strange", "Mister Fantastic", "Iron Fist", "Venom", "Spider Man",
-        "Captain America", "Iron Man", "Emma Frost", "Jeff the Shark", "Ultron",
-        "Hawkeye", "Groot", "Winter Soldier", "Cloak & Dagger", "Magneto",
-        "Moon Knight", "Invisible Woman", "Adam Warlock", "Namor", "Blade",
-        "Luna Snow", "Scarlet Witch", "Punisher", "Loki", "The Thing", "Phoenix",
-        "Wolverine", "Human Torch", "Squirrel Girl", "Black Widow"
-      ]
-    },
-    {
-      id: 'lol_campeones',
-      name: 'Campeones de LOL',
-      words: [
-        "Kled", "Quinn", "Malphite", "Ziggs", "Janna", "Anivia", "Sona", "Urgot", "Singed", "Kayle",
-        "Milio", "Nami", "Ashe", "Morgana", "Rek'Sai", "Briar", "Jinx", "Jax", "LeBlanc", "Akshan",
-        "Vex", "Kindred", "Soraka", "Warwick", "Diana", "Vel'Koz", "Nunu & Willump", "Vayne", "Trundle", "Poppy",
-        "Shen", "Pantheon", "Sett", "Katarina", "Fiora", "Xerath", "Syndra", "Vladimir", "Fizz", "Qiyana",
-        "Zoe", "Seraphine", "Garen", "Kha'Zix", "Master Yi", "Leona", "Bard", "Thresh", "Jarvan IV", "Irelia",
-        "Karma", "Smolder", "Kai'Sa", "Draven", "Lee Sin", "Sylas", "Caitlyn", "Udyr", "Fiddlesticks", "Zac",
-        "Zilean", "Volibear", "Veigar", "Kassadin", "Evelynn", "Ekko", "Ornn", "Amumu", "Zyra", "Riven",
-        "Talon", "Hwei", "Malzahar", "Camille", "Sion", "Lux", "Kayn", "Hecarim", "Twitch", "Miss Fortune",
-        "Tristana", "Mordekaiser", "Elise", "Senna", "Lissandra", "Lillia", "Brand", "Samira", "Gwen", "Cho'Gath",
-        "Ahri", "Zeri", "Teemo", "Gangplank", "Sivir", "Braum", "Shaco", "Wukong", "Darius", "Viego",
-        "Lucian", "Yasuo", "Pyke", "Xayah", "Zed", "Nautilus", "Viktor", "Blitzcrank", "Graves", "Ambessa",
-        "Aatrox", "Lulu", "Akali", "Mel", "Rell", "Gragas", "Naafiri", "Gnar", "Nocturne", "Xin Zhao",
-        "Rakan", "Tryndamere", "Yorick", "Neeko", "Jayce", "Aphelios", "Renekton", "Nasus", "Twisted Fate", "Jhin",
-        "Aurora", "Galio", "Orianna", "Cassiopeia", "Nilah", "Taric", "Kog'Maw", "Rammus", "Kennen", "Bel'Veth",
-        "Olaf", "Maokai", "Ivern", "Annie", "Ryze", "Aurelion Sol", "Illaoi", "Karthus", "Renata Glasc", "Tahm Kench",
-        "Shyvana", "Kalista", "Dr. Mundo", "Alistar", "Sejuani", "Nidalee", "Taliyah", "Vi", "Rengar", "Ezreal",
-        "Yone", "Rumble", "Corki", "Swain", "Yuumi", "Yunara", "Varus", "K'Sante", "Azir"
-      ]
-    },
-    { 
-        id: 'f1', 
-        name: 'Pilotos de Fórmula 1', 
+        id: 'futbol',
+        name: 'Jugadores de Fútbol',
         words: [
-          "Pierre Gasly",
-          "Franco Colapinto",
-          "Fernando Alonso",
-          "Lance Stroll",
-          "Gabriel Bortoleto",
-          "Nico Hulkenberg",
-          "Sergio Perez",
-          "Valtteri Bottas",
-          "Charles Leclerc",
-          "Lewis Hamilton",
-          "Esteban Ocon",
-          "Oliver Bearman",
-          "Lando Norris",
-          "Oscar Piastri",
-          "Kimi Antonelli",
-          "George Russell",
-          "Liam Lawson",
-          "Arvid Lindblad",
-          "Max Verstappen",
-          "Isack Hadjar",
-          "Alexander Albon",
-          "Carlos Sainz Jr"
+            // Leyendas e internacionales muy conocidos
+            "Lionel Messi",
+            "Cristiano Ronaldo",
+            "Diego Maradona",
+            "Pelé",
+            "Zinedine Zidane",
+            "Ronaldinho",
+            "Ronaldo nazario",
+            "Franz Beckenbauer",
+            "Paolo Maldini",
+
+            // Figuras muy conocidas (últimos años)
+            "Neymar",
+            "Luis Suárez",
+            "Andrés Iniesta",
+            "Sergio Ramos",
+            "Gianluigi Buffon",
+            "Iker Casillas",
+            "Manuel Neuer",
+            "Keylor navas",
+
+
+
+
+
+            // Estrellas actuales súper mediáticas
+            "Kylian Mbappé",
+            "Erling Haaland",
+            "Kevin De Bruyne",
+            "Mohamed Salah",
+            "Robert Lewandowski",
+            "Karim Benzema",
+            "Luka Modrić",
+            "Vinícius Jr",
+            "Rodri",
+            "Jude Bellingham",
+            "Lamine Yamal",
+
+            // Selección Argentina
+            "Ángel Di María",
+            "Sergio Agüero",
+            "Carlos Tévez",
+            "Juan Román Riquelme",
+            "Javier Mascherano",
+            "Cuti romero",
+            "Nicolas otamendi",
+            "Rodrigo de paul",
+            "Emiliano Martínez",
+            "Paulo Dybala",
+            "Enzo Fernández",
+            "Leo paredes",
+            "Julian alvarez",
+            "Lautaro martinez",
+
+            // Boca Juniors
+            "Cavani",
+            "Valentin Barco",
+            "Chiquito romero",
+            "Benedetto",
+            "Martín palermo",
+            "Sebastian Villa",
+            "Pique",
+            "Icardi",
+
+            // River Plate
+            "Marcelo Gallardo",
+            "Leonardo Ponzio",
+            "Pity Martínez",
+            "Franco Armani",
+            "Montiel",
+            "Juanfer quintero"
         ]
-      }
+    },
+    {
+        id: 'marvel_rivals',
+        name: 'Héroes de Marvel Rivals',
+        words: [
+            "Magik", "Peni Parker", "Rocket Raccoon", "Angela", "Mantis", "Storm",
+            "Hela", "Hulk", "Black Panther", "Star Lord", "Thor", "Psylocke",
+            "Doctor Strange", "Mister Fantastic", "Iron Fist", "Venom", "Spider Man",
+            "Captain America", "Iron Man", "Emma Frost", "Jeff the Shark", "Ultron",
+            "Hawkeye", "Groot", "Winter Soldier", "Cloak & Dagger", "Magneto",
+            "Moon Knight", "Invisible Woman", "Adam Warlock", "Namor", "Blade",
+            "Luna Snow", "Scarlet Witch", "Punisher", "Loki", "The Thing", "Phoenix",
+            "Wolverine", "Human Torch", "Squirrel Girl", "Black Widow"
+        ]
+    },
+    {
+        id: 'lol_campeones',
+        name: 'Campeones de LOL',
+        words: [
+            "Kled", "Quinn", "Malphite", "Ziggs", "Janna", "Anivia", "Sona", "Urgot", "Singed", "Kayle",
+            "Milio", "Nami", "Ashe", "Morgana", "Rek'Sai", "Briar", "Jinx", "Jax", "LeBlanc", "Akshan",
+            "Vex", "Kindred", "Soraka", "Warwick", "Diana", "Vel'Koz", "Nunu & Willump", "Vayne", "Trundle", "Poppy",
+            "Shen", "Pantheon", "Sett", "Katarina", "Fiora", "Xerath", "Syndra", "Vladimir", "Fizz", "Qiyana",
+            "Zoe", "Seraphine", "Garen", "Kha'Zix", "Master Yi", "Leona", "Bard", "Thresh", "Jarvan IV", "Irelia",
+            "Karma", "Smolder", "Kai'Sa", "Draven", "Lee Sin", "Sylas", "Caitlyn", "Udyr", "Fiddlesticks", "Zac",
+            "Zilean", "Volibear", "Veigar", "Kassadin", "Evelynn", "Ekko", "Ornn", "Amumu", "Zyra", "Riven",
+            "Talon", "Hwei", "Malzahar", "Camille", "Sion", "Lux", "Kayn", "Hecarim", "Twitch", "Miss Fortune",
+            "Tristana", "Mordekaiser", "Elise", "Senna", "Lissandra", "Lillia", "Brand", "Samira", "Gwen", "Cho'Gath",
+            "Ahri", "Zeri", "Teemo", "Gangplank", "Sivir", "Braum", "Shaco", "Wukong", "Darius", "Viego",
+            "Lucian", "Yasuo", "Pyke", "Xayah", "Zed", "Nautilus", "Viktor", "Blitzcrank", "Graves", "Ambessa",
+            "Aatrox", "Lulu", "Akali", "Mel", "Rell", "Gragas", "Naafiri", "Gnar", "Nocturne", "Xin Zhao",
+            "Rakan", "Tryndamere", "Yorick", "Neeko", "Jayce", "Aphelios", "Renekton", "Nasus", "Twisted Fate", "Jhin",
+            "Aurora", "Galio", "Orianna", "Cassiopeia", "Nilah", "Taric", "Kog'Maw", "Rammus", "Kennen", "Bel'Veth",
+            "Olaf", "Maokai", "Ivern", "Annie", "Ryze", "Aurelion Sol", "Illaoi", "Karthus", "Renata Glasc", "Tahm Kench",
+            "Shyvana", "Kalista", "Dr. Mundo", "Alistar", "Sejuani", "Nidalee", "Taliyah", "Vi", "Rengar", "Ezreal",
+            "Yone", "Rumble", "Corki", "Swain", "Yuumi", "Yunara", "Varus", "K'Sante", "Azir"
+        ]
+    },
+    {
+        id: 'f1',
+        name: 'Pilotos de Fórmula 1',
+        words: [
+            "Pierre Gasly",
+            "Franco Colapinto",
+            "Fernando Alonso",
+            "Lance Stroll",
+            "Gabriel Bortoleto",
+            "Nico Hulkenberg",
+            "Sergio Perez",
+            "Valtteri Bottas",
+            "Charles Leclerc",
+            "Lewis Hamilton",
+            "Esteban Ocon",
+            "Oliver Bearman",
+            "Lando Norris",
+            "Oscar Piastri",
+            "Kimi Antonelli",
+            "George Russell",
+            "Liam Lawson",
+            "Arvid Lindblad",
+            "Max Verstappen",
+            "Isack Hadjar",
+            "Alexander Albon",
+            "Carlos Sainz Jr"
+        ]
+    }
 ];
 
 // --- RUTAS DE FIRESTORE ---
@@ -232,18 +232,94 @@ const getRoomDocPath = (roomId) => `${getRoomsCollectionPath()}/${roomId}`;
 const getPlayersCollectionPath = (roomId) => `${getRoomDocPath(roomId)}/players`;
 const getPlayerDocPath = (roomId, userId) => `${getPlayersCollectionPath(roomId)}/${userId}`;
 
-// --- TEMA DE MUI ---
+// --- TEMA DE MUI (MATERIAL DESIGN 3) ---
 const theme = createTheme({
+    cssVariables: true,
     palette: {
-        primary: { main: '#e58e46ff' },
-        secondary: { main: '#10b924ff' },
-        background: { default: '#f3f4f6' },
+        mode: 'light',
+        primary: { main: '#6750A4' }, // MD3 Purple 40
+        secondary: { main: '#625B71' }, // MD3 Purple Grey 40
+        background: {
+            default: '#FEF7FF', // Surface Light
+            paper: '#F3EDF7',   // Surface Container Low
+        },
+        error: { main: '#B3261E' },
+        success: { main: '#2e7d32' },
+        text: {
+            primary: '#1C1B1F',
+            secondary: '#49454F',
+        },
     },
     typography: {
         fontFamily: 'Inter, sans-serif',
-        h1: { fontWeight: 900 },
-        h2: { fontWeight: 800 },
-        h3: { fontWeight: 700 },
+        h1: { fontWeight: 900, fontSize: '3.5rem' },
+        h2: { fontWeight: 800, fontSize: '2.5rem' },
+        h3: { fontWeight: 700, fontSize: '2rem' },
+        h4: { fontWeight: 600, fontSize: '1.75rem' },
+        h5: { fontWeight: 600, fontSize: '1.5rem' },
+        h6: { fontWeight: 600, fontSize: '1.25rem' },
+        button: { textTransform: 'none', fontWeight: 600, borderRadius: '20px' },
+    },
+    shape: {
+        borderRadius: 16,
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 100, // Pill shape
+                    padding: '10px 24px',
+                    boxShadow: 'none',
+                    '&:hover': {
+                        boxShadow: '0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
+                    },
+                },
+                contained: {
+                    color: '#FFFFFF',
+                },
+                sizeLarge: {
+                    padding: '12px 28px',
+                    fontSize: '1.1rem',
+                },
+            },
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    backgroundImage: 'none',
+                },
+                rounded: {
+                    borderRadius: 24, // MD3 Large shape
+                },
+            },
+        },
+        MuiTextField: {
+            styleOverrides: {
+                root: {
+                    '& .MuiOutlinedInput-root': {
+                        borderRadius: 12,
+                    },
+                },
+            },
+        },
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: '#FEF7FF', // Surface color
+                    color: '#1C1B1F', // On Surface
+                    boxShadow: 'none',
+                    borderBottom: '1px solid #E7E0EC',
+                },
+            },
+        },
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 16,
+                    boxShadow: '0px 1px 3px 0px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.24)',
+                },
+            },
+        },
     },
 });
 
@@ -258,7 +334,7 @@ const PlayerAssignment = ({ player }) => {
     const isImpostor = player.role === 'Impostor';
 
     return (
-        <Paper 
+        <Paper
             elevation={8}
             sx={{
                 maxWidth: 'md', mx: 'auto', borderRadius: 4, p: 4, transition: 'all 0.3s',
@@ -269,7 +345,7 @@ const PlayerAssignment = ({ player }) => {
             <Typography variant="h6" component="p" align="center" gutterBottom sx={{ textTransform: 'uppercase', letterSpacing: 2, opacity: 0.8 }}>
                 Tu Asignación
             </Typography>
-            
+
             {show ? (
                 <Box textAlign="center">
                     {/* CORRECCIÓN: word-break para palabras largas */}
@@ -277,7 +353,7 @@ const PlayerAssignment = ({ player }) => {
                         {player.word}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>
-                        {isImpostor 
+                        {isImpostor
                             ? "¡Tu misión es fingir que sabes la palabra!"
                             : "¡Encuentra a los impostores que no saben esta palabra!"}
                     </Typography>
@@ -307,7 +383,7 @@ const App = () => {
     const [userId, setUserId] = useState(null);
     const [isAuthReady, setIsAuthReady] = useState(false);
 
-    const [view, setView] = useState('HOME'); 
+    const [view, setView] = useState('HOME');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [userName, setUserName] = useState('');
@@ -318,7 +394,7 @@ const App = () => {
     const [players, setPlayers] = useState([]);
     const [wordPacks, setWordPacks] = useState([]);
     const [selectedPackId, setSelectedPackId] = useState('');
-    
+
     // Nuevo estado para la cantidad de impostores
     const [impostorCount, setImpostorCount] = useState(1);
 
@@ -367,26 +443,35 @@ const App = () => {
     }, [isAuthReady, userId, view]);
 
     // --- 3. Cargar Packs (Se ejecuta al conectar DB) ---
+    // --- 3. Cargar Packs (Se ejecuta al conectar DB) ---
     const seedWordPacks = useCallback(async (firestore) => {
-        const packsRef = collection(firestore, getWordPacksCollectionPath());
-        const snapshot = await getDocs(query(packsRef));
-        const remotePackIds = new Set(snapshot.docs.map(doc => doc.id));
-        const missingPacks = INITIAL_WORD_PACKS.filter(pack => !remotePackIds.has(pack.id));
+        try {
+            const packsRef = collection(firestore, getWordPacksCollectionPath());
+            const snapshot = await getDocs(query(packsRef));
+            const remotePackIds = new Set(snapshot.docs.map(doc => doc.id));
+            const missingPacks = INITIAL_WORD_PACKS.filter(pack => !remotePackIds.has(pack.id));
 
-        if (missingPacks.length > 0) {
-            console.log(`Cargando ${missingPacks.length} pack(s) nuevos...`);
-            const batch = writeBatch(firestore);
-            missingPacks.forEach(pack => batch.set(doc(packsRef, pack.id), pack));
-            try { await batch.commit(); } catch (e) { console.error("Error cargando packs:", e); }
+            if (missingPacks.length > 0) {
+                console.log(`Cargando ${missingPacks.length} pack(s) nuevos...`);
+                const batch = writeBatch(firestore);
+                missingPacks.forEach(pack => batch.set(doc(packsRef, pack.id), pack));
+                await batch.commit();
+            }
+        } catch (error) {
+            console.error("Error cargando/sembrando packs:", error);
+            // No bloqueamos la UI aquí, pero el listener de onSnapshot podría fallar o volver vacío
+            // Si falla, mostramos mensaje en la UI a través del estado 'error'
+            // setError("No se pudieron cargar las categorías. Verifica tu conexión."); 
+            // Opcional: setError para feedback visual si es crítico.
         }
     }, []);
 
     // --- 4. Gestión de Estado Local y Salida ---
     const resetLocalState = useCallback(() => {
-        setView('HOME'); 
-        setRoomId(null); 
-        setRoomData(null); 
-        setPlayers([]); 
+        setView('HOME');
+        setRoomId(null);
+        setRoomData(null);
+        setPlayers([]);
         setError(null);
         setImpostorCount(1);
         localStorage.removeItem('impostor_roomId');
@@ -418,21 +503,36 @@ const App = () => {
                 await deleteDoc(playerRef);
             }
         } catch (error) { console.error("Error al salir:", error); }
-        
+
         resetLocalState();
         setLoading(false);
     }, [db, userId, roomId, resetLocalState]);
 
     // --- 5. Listeners de Datos (Packs) ---
+    // --- 5. Listeners de Datos (Packs) ---
     useEffect(() => {
         if (!db || !isAuthReady) return;
+
+        // Intentar sembrar primero
         seedWordPacks(db);
+
         const packsRef = collection(db, getWordPacksCollectionPath());
         const unsubscribePacks = onSnapshot(packsRef, (snapshot) => {
             const packs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setWordPacks(packs);
-            if (packs.length > 0 && !selectedPackId) setSelectedPackId(packs[0].id);
-        }, (error) => console.error("Error fetching word packs:", error));
+            if (packs.length > 0 && !selectedPackId) {
+                setSelectedPackId(packs[0].id);
+            }
+        }, (error) => {
+            console.error("Error fetching word packs from DB, using fallback:", error);
+            // Fallback a los packs locales si falla la BD
+            setWordPacks(INITIAL_WORD_PACKS);
+            if (INITIAL_WORD_PACKS.length > 0 && !selectedPackId) {
+                setSelectedPackId(INITIAL_WORD_PACKS[0].id);
+            }
+            // No mostramos error bloqueante, permitimos jugar con lo local
+            // setError("Usando categorías locales (Error de conexión).");
+        });
         return () => unsubscribePacks();
     }, [db, isAuthReady, seedWordPacks]);
 
@@ -462,7 +562,7 @@ const App = () => {
         }, (error) => console.error("Error jugadores:", error));
 
         return () => { unsubscribeRoom(); unsubscribePlayers(); };
-    }, [db, roomId, userId, view, resetLocalState, handleLeaveRoom]); 
+    }, [db, roomId, userId, view, resetLocalState, handleLeaveRoom]);
 
     // --- 7. Lógica de Votación (Host) ---
     useEffect(() => {
@@ -470,8 +570,8 @@ const App = () => {
         if (roomData.revealRequest?.status === 'pending') {
             const nonHostPlayers = players.filter(p => p.id !== userId);
             if (nonHostPlayers.length === 0) {
-                 updateDoc(doc(db, getRoomDocPath(roomId)), { "revealRequest.status": 'approved' });
-                 return;
+                updateDoc(doc(db, getRoomDocPath(roomId)), { "revealRequest.status": 'approved' });
+                return;
             }
             const allApproved = nonHostPlayers.every(p => p.vote === 'approved');
             const anyDenied = nonHostPlayers.some(p => p.vote === 'denied');
@@ -492,25 +592,25 @@ const App = () => {
     const handleCreateRoom = async () => {
         if (!db || !userId || !userName) return;
         setLoading(true); setError(null);
-        
+
         // --- CAMBIO: Código de 2 dígitos (10 a 99) ---
         const newRoomId = Math.floor(10 + Math.random() * 90).toString();
-        
+
         localStorage.setItem('impostor_roomId', newRoomId);
         localStorage.setItem('impostor_userName', userName);
 
         const roomRef = doc(db, getRoomDocPath(newRoomId));
         const playerRef = doc(db, getPlayerDocPath(newRoomId, userId));
-        
-        const newRoomData = { 
-            hostId: userId, hostName: userName, status: 'SETUP', 
-            selectedPackId: wordPacks.length > 0 ? wordPacks[0].id : '', 
+
+        const newRoomData = {
+            hostId: userId, hostName: userName, status: 'SETUP',
+            selectedPackId: wordPacks.length > 0 ? wordPacks[0].id : '',
             createdAt: new Date().toISOString(),
             revealRequest: { status: 'idle', requestedBy: null },
             impostorIds: []
         };
         const hostPlayerData = { name: userName, role: null, word: null, vote: null };
-        
+
         try {
             const batch = writeBatch(db);
             batch.set(roomRef, newRoomData); batch.set(playerRef, hostPlayerData);
@@ -525,21 +625,21 @@ const App = () => {
         setLoading(true); setError(null);
         const roomRef = doc(db, getRoomDocPath(inputRoomId));
         const roomSnap = await getDoc(roomRef);
-        
+
         if (!roomSnap.exists()) { setError("Sala no existe."); setLoading(false); return; }
-        
+
         localStorage.setItem('impostor_roomId', inputRoomId);
         localStorage.setItem('impostor_userName', userName);
 
         const playerRef = doc(db, getPlayerDocPath(inputRoomId, userId));
         const playerSnap = await getDoc(playerRef);
-        
+
         if (!playerSnap.exists()) {
-             await setDoc(playerRef, { name: userName, role: null, word: null, vote: null });
+            await setDoc(playerRef, { name: userName, role: null, word: null, vote: null });
         } else {
-             await updateDoc(playerRef, { name: userName });
+            await updateDoc(playerRef, { name: userName });
         }
-        
+
         setRoomId(inputRoomId); setView('PLAYER');
         setLoading(false);
     };
@@ -553,30 +653,30 @@ const App = () => {
             setNewPlayerName('');
         } catch (error) { console.error(error); }
     };
-    
+
     const handleRemovePlayer = async (playerIdToRemove) => {
         if (!db || !roomId || roomData?.hostId !== userId || playerIdToRemove === userId) return;
-        try { await deleteDoc(doc(db, getPlayerDocPath(roomId, playerIdToRemove))); } catch (e) {console.error(e);}
+        try { await deleteDoc(doc(db, getPlayerDocPath(roomId, playerIdToRemove))); } catch (e) { console.error(e); }
     };
 
     const handleStartGame = async () => {
         if (!db || !roomId || !roomData || !selectedPackId || players.length < 3) return;
-        setLoading(true); 
-        
+        setLoading(true);
+
         const currentPack = wordPacks.find(p => p.id === selectedPackId);
         if (!currentPack || currentPack.words.length === 0) return;
-        
+
         const secretWord = currentPack.words[Math.floor(Math.random() * currentPack.words.length)];
-        
+
         const availableIndexes = players.map((_, i) => i);
         for (let i = availableIndexes.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [availableIndexes[i], availableIndexes[j]] = [availableIndexes[j], availableIndexes[i]];
         }
-        
+
         const actualImpostorCount = Math.min(impostorCount, players.length - 1);
         const impostorIndexes = new Set(availableIndexes.slice(0, actualImpostorCount));
-        
+
         const newImpostorIds = [];
 
         try {
@@ -586,19 +686,19 @@ const App = () => {
                 const isImpostor = impostorIndexes.has(index);
                 if (isImpostor) newImpostorIds.push(player.id);
 
-                batch.update(playerRef, { 
-                    role: isImpostor ? 'Impostor' : 'Ciudadano', 
+                batch.update(playerRef, {
+                    role: isImpostor ? 'Impostor' : 'Ciudadano',
                     word: isImpostor ? 'Impostor' : secretWord,
-                    vote: null 
+                    vote: null
                 });
             });
-            
+
             const roomRef = doc(db, getRoomDocPath(roomId));
-            batch.update(roomRef, { 
-                status: 'STARTED', 
-                selectedPackName: currentPack.name, 
-                impostorIds: newImpostorIds, 
-                impostorId: newImpostorIds[0], 
+            batch.update(roomRef, {
+                status: 'STARTED',
+                selectedPackName: currentPack.name,
+                impostorIds: newImpostorIds,
+                impostorId: newImpostorIds[0],
                 secretWord: secretWord,
                 revealRequest: { status: 'idle', requestedBy: null }
             });
@@ -615,8 +715,8 @@ const App = () => {
             players.forEach(player => {
                 batch.update(doc(db, getPlayerDocPath(roomId, player.id)), { role: null, word: null, vote: null });
             });
-            batch.update(doc(db, getRoomDocPath(roomId)), { 
-                status: 'SETUP', impostorId: null, impostorIds: [], secretWord: null, selectedPackName: null, revealRequest: { status: 'idle', requestedBy: null } 
+            batch.update(doc(db, getRoomDocPath(roomId)), {
+                status: 'SETUP', impostorId: null, impostorIds: [], secretWord: null, selectedPackName: null, revealRequest: { status: 'idle', requestedBy: null }
             });
             await batch.commit();
         } catch (error) { console.error(error); }
@@ -630,7 +730,7 @@ const App = () => {
         await batch.commit();
         await updateDoc(doc(db, getRoomDocPath(roomId)), { revealRequest: { status: 'pending', requestedBy: userId } });
     };
-    
+
     const handleCancelReveal = async () => {
         if (!db || !roomId) return;
         await updateDoc(doc(db, getRoomDocPath(roomId)), { revealRequest: { status: 'idle', requestedBy: null } });
@@ -657,18 +757,18 @@ const App = () => {
     );
 
     const renderHome = () => (
-        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {error && renderError()}
             <Typography variant="h3" component="h2" align="center" gutterBottom>¡Bienvenido!</Typography>
             <TextField id="name" label="Tu Nombre" value={userName} onChange={(e) => setUserName(e.target.value)} variant="outlined" fullWidth />
-            
+
             <Paper elevation={2} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Typography variant="h5" component="h3">Crear una Sala</Typography>
                 <Button onClick={handleCreateRoom} disabled={!userName || loading} variant="contained" size="large" startIcon={<Add />}>
                     Crear Nueva Sala
                 </Button>
             </Paper>
-            
+
             <Paper elevation={2} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Typography variant="h5" component="h3">Unirse a una Sala</Typography>
                 <TextField id="room-id" label="Código de Sala" placeholder="Ingresa el Código (ej. 12)" value={inputRoomId} onChange={(e) => setInputRoomId(e.target.value)} variant="outlined" fullWidth />
@@ -689,14 +789,14 @@ const App = () => {
             .join(', ');
 
         return (
-            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {error && renderError()}
                 <Paper elevation={4} sx={{ p: 3, textAlign: 'center', bgcolor: 'primary.main', color: 'white' }}>
                     <Typography sx={{ textTransform: 'uppercase', letterSpacing: 2, opacity: 0.7 }}>Código para unirse</Typography>
                     <Typography variant="h2" component="p" sx={{ fontWeight: 'black', letterSpacing: '0.1em' }}>{roomId}</Typography>
                 </Paper>
                 <Button onClick={handleLeaveRoom} variant="contained" color="error" startIcon={<Logout />}>Cerrar Sala</Button>
-                
+
                 {roomData.status === 'SETUP' ? (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                         <FormControl fullWidth variant="outlined">
@@ -728,13 +828,13 @@ const App = () => {
                                 valueLabelDisplay="auto"
                             />
                         </Box>
-                        
+
                         <Button onClick={handleStartGame} disabled={!canStart || loading} variant="contained" color="secondary" size="large" startIcon={<PlayArrow />} sx={{ py: 2, fontSize: '1.25rem' }}>
                             ¡Iniciar Partida!
                         </Button>
                         {!canStart && <Typography align="center" color="error" sx={{ mt: -2 }}>Se necesitan 3 o más jugadores.</Typography>}
                     </Box>
-                ) : ( 
+                ) : (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                         <PlayerAssignment player={me} />
                         <Paper elevation={2} sx={{ p: 3, textAlign: 'center' }}>
@@ -748,7 +848,7 @@ const App = () => {
                                 <Box>
                                     <CircularProgress size={20} sx={{ mr: 2 }} />
                                     <Typography component="span" variant="body1" color="text.secondary">Esperando autorización...</Typography>
-                                    <Button onClick={handleCancelReveal} variant="text" color="error" size="small" sx={{mt: 1}}>Cancelar Solicitud</Button>
+                                    <Button onClick={handleCancelReveal} variant="text" color="error" size="small" sx={{ mt: 1 }}>Cancelar Solicitud</Button>
                                 </Box>
                             )}
                             {roomData.revealRequest?.status === 'denied' && (
@@ -760,15 +860,15 @@ const App = () => {
                             {roomData.revealRequest?.status === 'approved' && (
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, p: 2, border: '1px solid', borderColor: 'success.main', borderRadius: 2 }}>
                                     <Alert severity="success">¡Solicitud Aprobada!</Alert>
-                                    <Typography variant="h6">Palabra: <strong style={{color: theme.palette.primary.main}}>{roomData.secretWord}</strong></Typography>
-                                    <Typography variant="h6">Impostores: <strong style={{color: theme.palette.error.main}}>{impostorNames}</strong></Typography>
+                                    <Typography variant="h6">Palabra: <strong style={{ color: theme.palette.primary.main }}>{roomData.secretWord}</strong></Typography>
+                                    <Typography variant="h6">Impostores: <strong style={{ color: theme.palette.error.main }}>{impostorNames}</strong></Typography>
                                 </Box>
                             )}
                         </Paper>
                         <Button onClick={handleResetGame} disabled={loading} variant="contained" startIcon={<Refresh />}>Jugar de Nuevo</Button>
                     </Box>
                 )}
-                
+
                 {roomData.status === 'SETUP' && (
                     <Paper elevation={2} sx={{ p: 2 }}>
                         <Typography variant="h6" component="h4" gutterBottom>Añadir Jugadores Manualmente</Typography>
@@ -778,7 +878,7 @@ const App = () => {
                         </Box>
                     </Paper>
                 )}
-                
+
                 <Paper elevation={2} sx={{ p: 2 }}>
                     <Typography variant="h6" component="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <People /> Jugadores ({players.length})
@@ -791,20 +891,20 @@ const App = () => {
                                 ) : (
                                     roomData.revealRequest?.status === 'pending' && player.id !== roomData.hostId && (
                                         player.vote === 'approved' ? <HowToVote color="success" /> :
-                                        player.vote === 'denied' ? <Cancel color="error" /> :
-                                        <CircularProgress size={20} />
+                                            player.vote === 'denied' ? <Cancel color="error" /> :
+                                                <CircularProgress size={20} />
                                     )
                                 )
                             }>
                                 <ListItemIcon>{player.id === roomData.hostId ? <EmojiEvents sx={{ color: 'orange' }} /> : <Group />}</ListItemIcon>
                                 {/* CORRECCIÓN: word-break para nombres largos en lista */}
-                                <ListItemText 
-                                    primary={player.name} 
-                                    primaryTypographyProps={{ 
-                                        fontWeight: player.id === userId ? 'bold' : 'normal', 
+                                <ListItemText
+                                    primary={player.name}
+                                    primaryTypographyProps={{
+                                        fontWeight: player.id === userId ? 'bold' : 'normal',
                                         color: player.id === userId ? 'primary.main' : 'text.primary',
-                                        style: { wordBreak: 'break-word' } 
-                                    }} 
+                                        style: { wordBreak: 'break-word' }
+                                    }}
                                 />
                             </ListItem>
                         ))}
@@ -820,25 +920,25 @@ const App = () => {
         const showVoteDialog = roomData.revealRequest?.status === 'pending' && me && !me.vote && me.id !== roomData.hostId;
 
         return (
-            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {error && renderError()}
-                
+
                 {/* CORRECCIÓN: flex container para título de sala */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
                     {/* CORRECCIÓN: permitir wrap y break-word para el nombre de sala */}
                     <Typography variant="h5" component="h2" sx={{ flex: 1, wordBreak: 'break-word' }}>
-                        Sala de: <span style={{fontWeight: 'bold'}}>{roomData.hostName}</span>
+                        Sala de: <span style={{ fontWeight: 'bold' }}>{roomData.hostName}</span>
                     </Typography>
                     <Button onClick={handleLeaveRoom} variant="contained" color="error" size="small" startIcon={<Logout />} sx={{ flexShrink: 0 }}>Salir</Button>
                 </Box>
-                
+
                 {roomData.status === 'SETUP' ? (
                     <Paper elevation={3} sx={{ p: 4, textAlign: 'center', bgcolor: 'grey.100' }}>
                         <CircularProgress sx={{ mb: 3 }} />
                         <Typography variant="h4" component="h3" gutterBottom>Esperando al Anfitrión</Typography>
                         <Typography variant="body1" color="text.secondary">El anfitrión está preparando la partida...</Typography>
                     </Paper>
-                ) : ( <PlayerAssignment player={me} /> )}
+                ) : (<PlayerAssignment player={me} />)}
 
                 <Paper elevation={2} sx={{ p: 2 }}>
                     <Typography variant="h6" component="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -849,13 +949,13 @@ const App = () => {
                             <ListItem key={player.id}>
                                 <ListItemIcon>{player.id === roomData.hostId ? <EmojiEvents sx={{ color: 'orange' }} /> : <Group />}</ListItemIcon>
                                 {/* CORRECCIÓN: word-break para nombres largos en lista */}
-                                <ListItemText 
-                                    primary={player.name} 
-                                    primaryTypographyProps={{ 
-                                        fontWeight: player.id === userId ? 'bold' : 'normal', 
+                                <ListItemText
+                                    primary={player.name}
+                                    primaryTypographyProps={{
+                                        fontWeight: player.id === userId ? 'bold' : 'normal',
                                         color: player.id === userId ? 'primary.main' : 'text.primary',
-                                        style: { wordBreak: 'break-word' } 
-                                    }} 
+                                        style: { wordBreak: 'break-word' }
+                                    }}
                                 />
                             </ListItem>
                         ))}
@@ -863,10 +963,10 @@ const App = () => {
                 </Paper>
 
                 <Dialog open={showVoteDialog} aria-labelledby="vote-dialog-title" aria-describedby="vote-dialog-description">
-                    <DialogTitle id="vote-dialog-title"><HowToVote sx={{ mr: 1, verticalAlign: 'middle' }}/>Solicitud del Anfitrión</DialogTitle>
+                    <DialogTitle id="vote-dialog-title"><HowToVote sx={{ mr: 1, verticalAlign: 'middle' }} />Solicitud del Anfitrión</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="vote-dialog-description">
-                            El anfitrión ({roomData.hostName}) quiere ver las respuestas.<br/><br/>
+                            El anfitrión ({roomData.hostName}) quiere ver las respuestas.<br /><br />
                             **¿Autorizas esta acción?** (Se requiere aprobación unánime)
                         </DialogContentText>
                     </DialogContent>
@@ -881,8 +981,8 @@ const App = () => {
 
     const renderView = () => {
         if (loading && !isAuthReady) return renderLoading();
-        if (view !== 'HOME' && !roomData && !loading) return renderHome(); 
-        switch(view) {
+        if (view !== 'HOME' && !roomData && !loading) return renderHome();
+        switch (view) {
             case 'HOST': return renderHost();
             case 'PLAYER': return renderPlayer();
             case 'HOME': default: return renderHome();
@@ -892,19 +992,42 @@ const App = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Container maxWidth="md" sx={{ my: 4 }}>
-                <Paper elevation={6} sx={{ borderRadius: 4, overflow: 'hidden' }}>
-                    <AppBar position="static" color="primary" sx={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
-                        <Toolbar>
-                            {view !== 'HOME' && (
-                                <IconButton edge="start" color="inherit" onClick={handleLeaveRoom} sx={{ mr: 1 }} title="Volver al Inicio"><Home /></IconButton>
-                            )}
-                            <Typography variant="h6" component="h1" sx={{ flexGrow: 1, textAlign: view === 'HOME' ? 'center' : 'left', fontWeight: 'bold' }}>El Juego del Impostor</Typography>
-                        </Toolbar>
-                    </AppBar>
-                    <Box component="main">{renderView()}</Box>
-                </Paper>
-            </Container>
+            {/* CORRECCIÓN: Layout Full Screen tipo App Moderna */}
+            <Box sx={{
+                minHeight: '100vh',
+                bgcolor: 'background.default',
+                display: 'flex',
+                flexDirection: 'column',
+                overflowX: 'hidden'
+            }}>
+                <AppBar position="sticky" elevation={0} sx={{ top: 0, zIndex: 1100 }}>
+                    <Toolbar sx={{ justifyContent: 'space-between' }}>
+                        {view !== 'HOME' && (
+                            <IconButton edge="start" color="inherit" onClick={handleLeaveRoom} aria-label="home">
+                                <Home />
+                            </IconButton>
+                        )}
+                        <Typography variant="h6" component="h1" sx={{ fontWeight: '800', letterSpacing: '-0.5px' }}>
+                            IMPOSTOR
+                        </Typography>
+                        {/* Placeholder para balancear el layout o settings futuro */}
+                        <Box width={40} />
+                    </Toolbar>
+                </AppBar>
+
+                <Container maxWidth="sm" sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    py: 4,
+                    px: { xs: 2, sm: 3 }, // Menos padding en móviles
+                    gap: 3
+                }}>
+                    <Box component="main" sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        {renderView()}
+                    </Box>
+                </Container>
+            </Box>
         </ThemeProvider>
     );
 };
