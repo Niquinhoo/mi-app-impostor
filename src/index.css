@@ -1,7 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body, html, #root {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
+  background-color: #F5F5F0;
+  font-family: 'Inter', sans-serif;
+  color: #000000;
 }
 
+/* ── Blinking cursor loading ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink-cursor {
+  display: inline-block;
+  animation: blink 1s step-start infinite;
+  font-family: 'Space Mono', monospace;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* ── Terminal tag labels ── */
+.status-tag {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 2px solid #000;
+  background: #F5F5F0;
+  color: #000;
+  text-transform: uppercase;
+}
+
+.status-tag.green {
+  background: #00FF41;
+  color: #000;
+}
+
+/* ── Room code accent bar ── */
+.room-code-box {
+  border: 3px solid #000;
+  border-left: 8px solid #00FF41;
+  background: #F5F5F0;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.room-code-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #000;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.room-code-number {
+  font-family: 'Space Mono', monospace;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: #000;
+}
+
+/* ── Player list rows ── */
+.player-row {
+  border: 2px solid #000;
+  border-top: none;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  gap: 12px;
+  background: #F5F5F0;
+}
+
+.player-row:first-of-type {
+  border-top: 2px solid #000;
+}
+
+.player-row.me {
+  background: #000;
+  color: #F5F5F0;
+}
+
+/* ── Role reveal cards ── */
+.role-card-impostor {
+  background: #000;
+  color: #00FF41;
+  border: 3px solid #000;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.role-card-ciudadano {
+  background: #F5F5F0;
+  color: #000;
+  border: 3px solid #000;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.role-card-hidden {
+  background: #F5F5F0;
+  border: 3px solid #000;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+/* ── Brutalist card / paper ── */
+.brut-card {
+  background: #F5F5F0;
+  border: 2px solid #000;
+  padding: 20px;
+}
+
+/* ── Inputs ── */
+.brut-input {
+  font-family: 'Space Mono', monospace;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 0 !important;
+  padding: 12px 14px;
+  font-size: 1rem;
+  color: #000;
+  width: 100%;
+  outline: none;
+}
+
+.brut-input:focus {
+  border-color: #00FF41;
+  box-shadow: none;
+}
+
+/* ── Buttons ── */
+.brut-btn-primary {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #00FF41;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 0 !important;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.brut-btn-primary:hover:not(:disabled) {
+  background: #00e03a;
+}
+
+.brut-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.brut-btn-secondary {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 0 !important;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.brut-btn-secondary:hover:not(:disabled) {
+  background: #F5F5F0;
+}
+
+.brut-btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.brut-btn-danger {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
+  border-radius: 0 !important;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.brut-btn-danger:hover:not(:disabled) {
+  background: #222;
+}
+
+/* ── AppBar ── */
+.brut-appbar {
+  background: #fff;
+  border-bottom: 3px solid #000;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+}
+
+.brut-appbar-logo {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+/* ── Section headings ── */
+.brut-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin: 0 0 12px 0;
+}
+
+.brut-subheading {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #000;
+  opacity: 0.5;
+  margin: 0 0 8px 0;
+}
+
+/* ── Approved reveal box ── */
+.reveal-approved-box {
+  border: 3px solid #00FF41;
+  background: #F5F5F0;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Alert / Error ── */
+.brut-alert {
+  border: 2px solid #000;
+  background: #fff;
+  padding: 12px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brut-alert.error {
+  border-color: #000;
+  background: #fff0f0;
+}
+
+/* ── Select / dropdown ── */
+.brut-select {
+  font-family: 'Space Mono', monospace;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 0 !important;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: #000;
+  width: 100%;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* ── Dialog / Modal ── */
+.brut-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 16px;
+}
+
+.brut-dialog {
+  background: #F5F5F0;
+  border: 3px solid #000;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ── Slider overrides ── */
+.MuiSlider-root {
+  border-radius: 0 !important;
+}
+
+.MuiSlider-thumb {
+  border-radius: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: #000 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.MuiSlider-track {
+  background: #00FF41 !important;
+  border: none !important;
+  height: 6px !important;
+}
+
+.MuiSlider-rail {
+  background: #ccc !important;
+  height: 6px !important;
+  border-radius: 0 !important;
+}
+
+.MuiSlider-mark {
+  border-radius: 0 !important;
+  background: #000 !important;
+}
+
+.MuiSlider-valueLabel {
+  border-radius: 0 !important;
+  background: #000 !important;
+  font-family: 'Space Mono', monospace !important;
+}

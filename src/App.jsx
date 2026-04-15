@@ -22,49 +22,8 @@ import {
     CssBaseline,
     Container,
     Box,
-    AppBar,
-    Toolbar,
-    Typography,
-    Button,
-    TextField,
-    Paper,
-    CircularProgress,
-    Alert,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    List,
-    ListItem,
-    ListItemText,
-    IconButton,
-    ListItemIcon,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
     Slider
 } from '@mui/material';
-import {
-    Group,
-    Shuffle,
-    Visibility,
-    VisibilityOff,
-    Home,
-    EmojiEvents,
-    PlayArrow,
-    Add,
-    Login,
-    Logout,
-    Refresh,
-    Delete,
-    People,
-    Key,
-    Lock,
-    HowToVote,
-    Cancel
-} from '@mui/icons-material';
 
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
@@ -232,147 +191,162 @@ const getRoomDocPath = (roomId) => `${getRoomsCollectionPath()}/${roomId}`;
 const getPlayersCollectionPath = (roomId) => `${getRoomDocPath(roomId)}/players`;
 const getPlayerDocPath = (roomId, userId) => `${getPlayersCollectionPath(roomId)}/${userId}`;
 
-// --- TEMA DE MUI (MATERIAL DESIGN 3) ---
+// --- BRUTALIST THEME ---
 const theme = createTheme({
-    cssVariables: true,
     palette: {
         mode: 'light',
-        primary: { main: '#6750A4' }, // MD3 Purple 40
-        secondary: { main: '#625B71' }, // MD3 Purple Grey 40
-        background: {
-            default: '#FEF7FF', // Surface Light
-            paper: '#F3EDF7',   // Surface Container Low
-        },
-        error: { main: '#B3261E' },
-        success: { main: '#2e7d32' },
-        text: {
-            primary: '#1C1B1F',
-            secondary: '#49454F',
-        },
+        primary: { main: '#00FF41', contrastText: '#000' },
+        secondary: { main: '#000', contrastText: '#fff' },
+        background: { default: '#F5F5F0', paper: '#F5F5F0' },
+        error: { main: '#cc0000' },
+        success: { main: '#00FF41' },
+        text: { primary: '#000', secondary: '#444' },
     },
     typography: {
-        fontFamily: 'Inter, sans-serif',
-        h1: { fontWeight: 900, fontSize: '3.5rem' },
-        h2: { fontWeight: 800, fontSize: '2.5rem' },
-        h3: { fontWeight: 700, fontSize: '2rem' },
-        h4: { fontWeight: 600, fontSize: '1.75rem' },
-        h5: { fontWeight: 600, fontSize: '1.5rem' },
-        h6: { fontWeight: 600, fontSize: '1.25rem' },
-        button: { textTransform: 'none', fontWeight: 600, borderRadius: '20px' },
+        fontFamily: '"Inter", sans-serif',
     },
-    shape: {
-        borderRadius: 16,
-    },
+    shape: { borderRadius: 0 },
     components: {
-        MuiButton: {
+        MuiSlider: {
             styleOverrides: {
-                root: {
-                    borderRadius: 100, // Pill shape
-                    padding: '10px 24px',
-                    boxShadow: 'none',
-                    '&:hover': {
-                        boxShadow: '0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
-                    },
-                },
-                contained: {
-                    color: '#FFFFFF',
-                },
-                sizeLarge: {
-                    padding: '12px 28px',
-                    fontSize: '1.1rem',
-                },
-            },
-        },
-        MuiPaper: {
-            styleOverrides: {
-                root: {
-                    backgroundImage: 'none',
-                },
-                rounded: {
-                    borderRadius: 24, // MD3 Large shape
-                },
-            },
-        },
-        MuiTextField: {
-            styleOverrides: {
-                root: {
-                    '& .MuiOutlinedInput-root': {
-                        borderRadius: 12,
-                    },
-                },
-            },
-        },
-        MuiAppBar: {
-            styleOverrides: {
-                root: {
-                    backgroundColor: '#FEF7FF', // Surface color
-                    color: '#1C1B1F', // On Surface
-                    boxShadow: 'none',
-                    borderBottom: '1px solid #E7E0EC',
-                },
-            },
-        },
-        MuiCard: {
-            styleOverrides: {
-                root: {
-                    borderRadius: 16,
-                    boxShadow: '0px 1px 3px 0px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.24)',
-                },
+                thumb: { borderRadius: 0, width: 14, height: 14, background: '#000', boxShadow: 'none' },
+                track: { background: '#00FF41', border: 'none', height: 5 },
+                rail: { background: '#ccc', height: 5, borderRadius: 0 },
+                mark: { borderRadius: 0, background: '#000' },
+                valueLabel: { borderRadius: 0, background: '#000', fontFamily: '"Space Mono", monospace' },
             },
         },
     },
 });
+
+// --- BRUTALIST DESIGN TOKENS ---
+const C = {
+    bg: '#F5F5F0',
+    black: '#000',
+    white: '#fff',
+    green: '#00FF41',
+    border: '2px solid #000',
+    borderThick: '3px solid #000',
+};
+
+const S = {
+    mono: { fontFamily: '"Space Mono", monospace' },
+    heading: { fontFamily: '"Inter", sans-serif', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.01em' },
+};
+
+// Reusable brutalist primitive components
+const BBtn = ({ children, variant = 'primary', onClick, disabled, style, ...rest }) => {
+    const base = {
+        fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '0.82rem',
+        textTransform: 'uppercase', letterSpacing: '0.06em', border: C.border,
+        borderRadius: 0, padding: '10px 18px', cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.4 : 1, display: 'inline-flex', alignItems: 'center', gap: 6,
+        transition: 'background 0.1s', lineHeight: 1.2,
+    };
+    const variants = {
+        primary: { background: C.green, color: C.black },
+        secondary: { background: C.white, color: C.black },
+        danger: { background: C.black, color: C.white },
+    };
+    return (
+        <button onClick={disabled ? undefined : onClick} disabled={disabled} style={{ ...base, ...variants[variant], ...style }} {...rest}>
+            {children}
+        </button>
+    );
+};
+
+const BInput = ({ value, onChange, onKeyDown, placeholder, id, style }) => (
+    <input
+        id={id}
+        value={value}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder={placeholder}
+        style={{
+            fontFamily: '"Space Mono", monospace', background: C.white,
+            border: C.border, borderRadius: 0, padding: '11px 14px',
+            fontSize: '0.95rem', color: C.black, width: '100%', outline: 'none',
+            boxSizing: 'border-box', ...style
+        }}
+    />
+);
+
+const BCard = ({ children, style }) => (
+    <div style={{ border: C.border, background: C.bg, padding: 20, ...style }}>
+        {children}
+    </div>
+);
+
+const BTag = ({ children, green }) => (
+    <span style={{
+        fontFamily: '"Space Mono", monospace', fontSize: '0.68rem', fontWeight: 700,
+        letterSpacing: '0.08em', padding: '2px 8px', border: C.border,
+        background: green ? C.green : C.bg, color: C.black, textTransform: 'uppercase',
+        display: 'inline-block',
+    }}>{children}</span>
+);
+
+const BLabel = ({ children }) => (
+    <p style={{ ...S.mono, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.12em', opacity: 0.55, margin: '0 0 4px 0' }}>{children}</p>
+);
 
 // --- COMPONENTE ASIGNACIÓN DE JUGADOR ---
 const PlayerAssignment = ({ player }) => {
     const [show, setShow] = useState(false);
 
     if (!player || !player.role) {
-        return <CircularProgress sx={{ display: 'block', margin: 'auto', my: 4 }} />;
+        return (
+            <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '2.5rem', animation: 'blink 1s step-start infinite', display: 'inline-block' }}>█</span>
+                <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 12, opacity: 0.5 }}>Cargando asignación...</p>
+                <style>{`@keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }`}</style>
+            </div>
+        );
     }
 
     const isImpostor = player.role === 'Impostor';
 
+    const cardStyle = show
+        ? isImpostor
+            ? { background: '#000', color: '#00FF41', border: '3px solid #000' }
+            : { background: '#F5F5F0', color: '#000', border: '3px solid #000' }
+        : { background: '#F5F5F0', color: '#000', border: '3px solid #000' };
+
     return (
-        <Paper
-            elevation={8}
-            sx={{
-                maxWidth: 'md', mx: 'auto', borderRadius: 4, p: 4, transition: 'all 0.3s',
-                backgroundColor: show ? (isImpostor ? 'error.dark' : 'success.dark') : 'primary.dark',
-                color: 'white'
-            }}
-        >
-            <Typography variant="h6" component="p" align="center" gutterBottom sx={{ textTransform: 'uppercase', letterSpacing: 2, opacity: 0.8 }}>
+        <div style={{ ...cardStyle, padding: '32px 24px', textAlign: 'center' }}>
+            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', opacity: 0.55, margin: '0 0 16px 0' }}>
                 Tu Asignación
-            </Typography>
+            </p>
 
             {show ? (
-                <Box textAlign="center">
-                    {/* CORRECCIÓN: word-break para palabras largas */}
-                    <Typography variant="h2" component="p" sx={{ fontWeight: 'black', mb: 2, animation: 'pulse 1.5s infinite', wordBreak: 'break-word', hyphens: 'auto' }}>
+                <div>
+                    <p style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '2.4rem', textTransform: 'uppercase', wordBreak: 'break-word', margin: '0 0 12px 0', lineHeight: 1.1 }}>
                         {player.word}
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>
-                        {isImpostor
-                            ? "¡Tu misión es fingir que sabes la palabra!"
-                            : "¡Encuentra a los impostores que no saben esta palabra!"}
-                    </Typography>
-                    <Button onClick={() => setShow(false)} variant="contained" size="large" sx={{ bgcolor: 'white', color: 'primary.dark', '&:hover': { bgcolor: 'grey.200' } }} startIcon={<VisibilityOff />}>
+                    </p>
+                    {isImpostor && (
+                        <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em', padding: '2px 8px', border: '2px solid #00FF41', background: 'transparent', color: '#00FF41', textTransform: 'uppercase', display: 'inline-block', marginBottom: 16 }}>
+                            IMPOSTOR
+                        </span>
+                    )}
+                    <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.8rem', opacity: 0.75, margin: '0 0 20px 0' }}>
+                        {isImpostor ? '¡Finge que sabes la palabra!' : '¡Encuentra al impostor!'}
+                    </p>
+                    <BBtn variant={isImpostor ? 'secondary' : 'danger'} onClick={() => setShow(false)}
+                        style={isImpostor ? { border: '2px solid #00FF41', background: 'transparent', color: '#00FF41' } : {}}>
                         Ocultar
-                    </Button>
-                </Box>
+                    </BBtn>
+                </div>
             ) : (
-                <Box textAlign="center">
-                    <Typography variant="h3" component="p" sx={{ fontWeight: 'bold', mb: 4 }}>
+                <div>
+                    <p style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '1.8rem', textTransform: 'uppercase', margin: '0 0 24px 0' }}>
                         ¿Quién soy?
-                    </Typography>
-                    <Button onClick={() => setShow(true)} variant="contained" size="large" sx={{ bgcolor: 'white', color: 'primary.dark', transform: 'scale(1.05)', '&:hover': { bgcolor: 'grey.200', transform: 'scale(1.1)' } }} startIcon={<Visibility />}>
+                    </p>
+                    <BBtn variant="primary" onClick={() => setShow(true)} style={{ fontSize: '1rem', padding: '14px 28px' }}>
                         Ver mi Rol
-                    </Button>
-                </Box>
+                    </BBtn>
+                </div>
             )}
-            <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }`}</style>
-        </Paper>
+        </div>
     );
 };
 
@@ -744,173 +718,207 @@ const App = () => {
         await updateDoc(doc(db, getPlayerDocPath(roomId, userId)), { vote: vote });
     };
 
-    // --- VISTAS ---
+    // --- VISTAS BRUTALIST ---
+    const gap = { display: 'flex', flexDirection: 'column', gap: 16 };
+
     const renderLoading = () => (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, p: 3 }}>
-            <CircularProgress size={60} />
-            <Typography variant="h6" sx={{ mt: 3, color: 'text.secondary' }}>Cargando...</Typography>
-        </Box>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 320, padding: 24 }}>
+            <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '3rem', animation: 'blink 1s step-start infinite', display: 'inline-block' }}>█</span>
+            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 14, opacity: 0.5 }}>Cargando...</p>
+            <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
+        </div>
     );
 
     const renderError = () => (
-        <Alert severity="error" onClose={() => setError(null)} sx={{ m: 2 }}>{error}</Alert>
+        <div style={{ border: '2px solid #000', background: '#fff0f0', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: '"Space Mono", monospace', fontSize: '0.82rem' }}>
+            <span>⚠ {error}</span>
+            <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }}>✕</button>
+        </div>
     );
 
     const renderHome = () => (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <div style={{ ...gap }}>
+            <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
             {error && renderError()}
-            <Typography variant="h3" component="h2" align="center" gutterBottom>¡Bienvenido!</Typography>
-            <TextField id="name" label="Tu Nombre" value={userName} onChange={(e) => setUserName(e.target.value)} variant="outlined" fullWidth />
+            <div style={{ textAlign: 'center', padding: '24px 0 8px' }}>
+                <h1 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '3rem', textTransform: 'uppercase', letterSpacing: '-0.02em', margin: 0, lineHeight: 1 }}>IMPOSTOR</h1>
+                <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.45, marginTop: 8 }}>Juego multijugador</p>
+            </div>
 
-            <Paper elevation={2} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Typography variant="h5" component="h3">Crear una Sala</Typography>
-                <Button onClick={handleCreateRoom} disabled={!userName || loading} variant="contained" size="large" startIcon={<Add />}>
-                    Crear Nueva Sala
-                </Button>
-            </Paper>
+            <div>
+                <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.5, margin: '0 0 6px 0' }}>Tu Nombre</p>
+                <BInput id="name" value={userName} onChange={(e) => setUserName(e.target.value)} placeholder="Escribe tu nombre..." />
+            </div>
 
-            <Paper elevation={2} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Typography variant="h5" component="h3">Unirse a una Sala</Typography>
-                <TextField id="room-id" label="Código de Sala" placeholder="Ingresa el Código (ej. 12)" value={inputRoomId} onChange={(e) => setInputRoomId(e.target.value)} variant="outlined" fullWidth />
-                <Button onClick={handleJoinRoom} disabled={!userName || !inputRoomId || loading} variant="contained" color="secondary" size="large" startIcon={<Login />}>
-                    Unirse a Sala
-                </Button>
-            </Paper>
-        </Box>
+            <BCard>
+                <h2 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '1rem', textTransform: 'uppercase', margin: '0 0 14px 0', letterSpacing: '0.04em' }}>Crear una Sala</h2>
+                <BBtn variant="primary" onClick={handleCreateRoom} disabled={!userName || loading} style={{ width: '100%', justifyContent: 'center', fontSize: '0.9rem', padding: '13px' }}>
+                    + Crear Nueva Sala
+                </BBtn>
+            </BCard>
+
+            <BCard>
+                <h2 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '1rem', textTransform: 'uppercase', margin: '0 0 14px 0', letterSpacing: '0.04em' }}>Unirse a una Sala</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <BInput id="room-id" value={inputRoomId} onChange={(e) => setInputRoomId(e.target.value)} placeholder="Código de sala (ej: 42)" />
+                    <BBtn variant="secondary" onClick={handleJoinRoom} disabled={!userName || !inputRoomId || loading} style={{ width: '100%', justifyContent: 'center', padding: '13px' }}>
+                        → Unirse a Sala
+                    </BBtn>
+                </div>
+            </BCard>
+        </div>
     );
 
     const renderHost = () => {
         if (!roomData) return renderLoading();
         const canStart = players.length >= 3 && selectedPackId;
         const me = players.find(p => p.id === userId);
-        const impostorNames = players
-            .filter(p => roomData.impostorIds?.includes(p.id))
-            .map(p => p.name)
-            .join(', ');
+        const impostorNames = players.filter(p => roomData.impostorIds?.includes(p.id)).map(p => p.name).join(', ');
+        const isPending = roomData.revealRequest?.status === 'pending';
+        const isDenied  = roomData.revealRequest?.status === 'denied';
+        const isApproved = roomData.revealRequest?.status === 'approved';
 
         return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <div style={{ ...gap }}>
+                <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
                 {error && renderError()}
-                <Paper elevation={4} sx={{ p: 3, textAlign: 'center', bgcolor: 'primary.main', color: 'white' }}>
-                    <Typography sx={{ textTransform: 'uppercase', letterSpacing: 2, opacity: 0.7 }}>Código para unirse</Typography>
-                    <Typography variant="h2" component="p" sx={{ fontWeight: 'black', letterSpacing: '0.1em' }}>{roomId}</Typography>
-                </Paper>
-                <Button onClick={handleLeaveRoom} variant="contained" color="error" startIcon={<Logout />}>Cerrar Sala</Button>
+
+                <div style={{ border: '3px solid #000', borderLeft: '8px solid #00FF41', background: '#F5F5F0', padding: '16px 20px', display: 'flex', flexDirection: 'column' }}>
+                    <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.5, margin: '0 0 4px 0' }}>
+                        Código para unirse
+                    </p>
+                    <span style={{ fontFamily: '"Space Mono", monospace', fontWeight: 700, fontSize: '4.5rem', lineHeight: 1, letterSpacing: '0.06em' }}>
+                        {roomId}
+                    </span>
+                    <div style={{ marginTop: 8 }}>
+                        <BTag green={roomData.status === 'STARTED'}>
+                            {roomData.status === 'SETUP' ? '[ WAITING ]' : '[ STARTED ]'}
+                        </BTag>
+                    </div>
+                </div>
+
+                <BBtn variant="danger" onClick={handleLeaveRoom} style={{ width: '100%', justifyContent: 'center' }}>
+                    ✕ Cerrar Sala
+                </BBtn>
 
                 {roomData.status === 'SETUP' ? (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <FormControl fullWidth variant="outlined">
-                            <InputLabel id="word-pack-label">Pack de Palabras</InputLabel>
-                            <Select labelId="word-pack-label" id="word-pack" value={selectedPackId} label="Pack de Palabras"
+                    <div style={{ ...gap }}>
+                        <div>
+                            <BLabel>Pack de Palabras</BLabel>
+                            <select id="word-pack" value={selectedPackId}
                                 onChange={(e) => {
                                     const newPackId = e.target.value;
                                     setSelectedPackId(newPackId);
                                     updateDoc(doc(db, getRoomDocPath(roomId)), { selectedPackId: newPackId });
                                 }}
+                                style={{ fontFamily: '"Space Mono", monospace', background: '#fff', border: '2px solid #000', borderRadius: 0, padding: '11px 14px', fontSize: '0.85rem', color: '#000', width: '100%', outline: 'none', cursor: 'pointer' }}
                             >
                                 {wordPacks.map(pack => (
-                                    <MenuItem key={pack.id} value={pack.id}>{pack.name} ({pack.words.length} palabras)</MenuItem>
+                                    <option key={pack.id} value={pack.id}>{pack.name} ({pack.words.length} palabras)</option>
                                 ))}
-                            </Select>
-                        </FormControl>
+                            </select>
+                        </div>
 
-                        <Box sx={{ px: 1 }}>
-                            <Typography gutterBottom>
-                                Cantidad de Impostores: <strong>{impostorCount}</strong>
-                            </Typography>
-                            <Slider
-                                value={impostorCount}
-                                onChange={(e, val) => setImpostorCount(val)}
-                                step={1}
-                                marks
-                                min={1}
-                                max={Math.max(1, Math.floor(players.length / 2))}
-                                valueLabelDisplay="auto"
-                            />
-                        </Box>
+                        <BCard>
+                            <BLabel>Cantidad de Impostores</BLabel>
+                            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '1.4rem', fontWeight: 700, margin: '4px 0 12px 0' }}>{impostorCount}</p>
+                            <input type="range" min="1" max={Math.max(1, Math.floor(players.length / 2))} value={impostorCount} onChange={(e) => setImpostorCount(parseInt(e.target.value))} style={{ width: '100%' }} />
+                        </BCard>
 
-                        <Button onClick={handleStartGame} disabled={!canStart || loading} variant="contained" color="secondary" size="large" startIcon={<PlayArrow />} sx={{ py: 2, fontSize: '1.25rem' }}>
-                            ¡Iniciar Partida!
-                        </Button>
-                        {!canStart && <Typography align="center" color="error" sx={{ mt: -2 }}>Se necesitan 3 o más jugadores.</Typography>}
-                    </Box>
+                        <BBtn variant="primary" onClick={handleStartGame} disabled={!canStart || loading} style={{ width: '100%', justifyContent: 'center', fontSize: '1rem', padding: '16px' }}>
+                            ▶ ¡Iniciar Partida!
+                        </BBtn>
+                        {!canStart && (
+                            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.75rem', color: '#cc0000', textAlign: 'center', margin: 0 }}>
+                                Se necesitan 3 o más jugadores.
+                            </p>
+                        )}
+                    </div>
                 ) : (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ ...gap }}>
                         <PlayerAssignment player={me} />
-                        <Paper elevation={2} sx={{ p: 3, textAlign: 'center' }}>
-                            <Typography variant="h6" component="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                                <Key /> Panel de Administrador
-                            </Typography>
+
+                        <BCard>
+                            <h3 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 14px 0' }}>
+                                ⌘ Panel de Administrador
+                            </h3>
                             {(!roomData.revealRequest || roomData.revealRequest.status === 'idle') && (
-                                <Button onClick={handleRequestReveal} variant="outlined" startIcon={<Lock />}>ADMIN: Solicitar Ver Respuestas</Button>
+                                <BBtn variant="secondary" onClick={handleRequestReveal} style={{ width: '100%', justifyContent: 'center' }}>
+                                    🔒 Solicitar Ver Respuestas
+                                </BBtn>
                             )}
-                            {roomData.revealRequest?.status === 'pending' && (
-                                <Box>
-                                    <CircularProgress size={20} sx={{ mr: 2 }} />
-                                    <Typography component="span" variant="body1" color="text.secondary">Esperando autorización...</Typography>
-                                    <Button onClick={handleCancelReveal} variant="text" color="error" size="small" sx={{ mt: 1 }}>Cancelar Solicitud</Button>
-                                </Box>
+                            {isPending && (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                                    <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '1.8rem', animation: 'blink 1s step-start infinite' }}>█</span>
+                                    <BTag>Esperando autorización...</BTag>
+                                    <BBtn variant="danger" onClick={handleCancelReveal} style={{ fontSize: '0.75rem', padding: '6px 14px' }}>Cancelar</BBtn>
+                                </div>
                             )}
-                            {roomData.revealRequest?.status === 'denied' && (
-                                <Box>
-                                    <Alert severity="error" sx={{ mb: 2 }}>Solicitud denegada.</Alert>
-                                    <Button onClick={handleRequestReveal} variant="outlined" startIcon={<Lock />}>Volver a Solicitar</Button>
-                                </Box>
+                            {isDenied && (
+                                <div style={{ ...gap }}>
+                                    <div style={{ border: '2px solid #000', background: '#fff0f0', padding: '10px 14px', fontFamily: '"Space Mono", monospace', fontSize: '0.8rem' }}>
+                                        ✕ Solicitud denegada.
+                                    </div>
+                                    <BBtn variant="secondary" onClick={handleRequestReveal} style={{ width: '100%', justifyContent: 'center' }}>Volver a Solicitar</BBtn>
+                                </div>
                             )}
-                            {roomData.revealRequest?.status === 'approved' && (
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, p: 2, border: '1px solid', borderColor: 'success.main', borderRadius: 2 }}>
-                                    <Alert severity="success">¡Solicitud Aprobada!</Alert>
-                                    <Typography variant="h6">Palabra: <strong style={{ color: theme.palette.primary.main }}>{roomData.secretWord}</strong></Typography>
-                                    <Typography variant="h6">Impostores: <strong style={{ color: theme.palette.error.main }}>{impostorNames}</strong></Typography>
-                                </Box>
+                            {isApproved && (
+                                <div style={{ border: '3px solid #00FF41', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <BTag green>✓ Solicitud Aprobada</BTag>
+                                    <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.9rem', margin: 0 }}>
+                                        Palabra: <strong style={{ color: '#00AA2A' }}>{roomData.secretWord}</strong>
+                                    </p>
+                                    <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.9rem', margin: 0 }}>
+                                        Impostores: <strong style={{ color: '#cc0000' }}>{impostorNames}</strong>
+                                    </p>
+                                </div>
                             )}
-                        </Paper>
-                        <Button onClick={handleResetGame} disabled={loading} variant="contained" startIcon={<Refresh />}>Jugar de Nuevo</Button>
-                    </Box>
+                        </BCard>
+
+                        <BBtn variant="secondary" onClick={handleResetGame} disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
+                            ↺ Jugar de Nuevo
+                        </BBtn>
+                    </div>
                 )}
 
                 {roomData.status === 'SETUP' && (
-                    <Paper elevation={2} sx={{ p: 2 }}>
-                        <Typography variant="h6" component="h4" gutterBottom>Añadir Jugadores Manualmente</Typography>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <TextField label="Nombre del Jugador" value={newPlayerName} onChange={(e) => setNewPlayerName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddPlayerManually()} variant="outlined" size="small" fullWidth />
-                            <IconButton color="primary" onClick={handleAddPlayerManually}><Add /></IconButton>
-                        </Box>
-                    </Paper>
+                    <BCard>
+                        <BLabel>Añadir Jugadores Manualmente</BLabel>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <BInput value={newPlayerName} onChange={(e) => setNewPlayerName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddPlayerManually()} placeholder="Nombre del jugador" />
+                            <BBtn variant="primary" onClick={handleAddPlayerManually} style={{ flexShrink: 0, padding: '10px 16px' }}>+</BBtn>
+                        </div>
+                    </BCard>
                 )}
 
-                <Paper elevation={2} sx={{ p: 2 }}>
-                    <Typography variant="h6" component="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <People /> Jugadores ({players.length})
-                    </Typography>
-                    <List dense>
-                        {players.map(player => (
-                            <ListItem key={player.id} secondaryAction={
-                                (roomData.hostId === userId && player.id !== userId && roomData.status === 'SETUP') ? (
-                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemovePlayer(player.id)} color="error"><Delete /></IconButton>
-                                ) : (
-                                    roomData.revealRequest?.status === 'pending' && player.id !== roomData.hostId && (
-                                        player.vote === 'approved' ? <HowToVote color="success" /> :
-                                            player.vote === 'denied' ? <Cancel color="error" /> :
-                                                <CircularProgress size={20} />
-                                    )
-                                )
-                            }>
-                                <ListItemIcon>{player.id === roomData.hostId ? <EmojiEvents sx={{ color: 'orange' }} /> : <Group />}</ListItemIcon>
-                                {/* CORRECCIÓN: word-break para nombres largos en lista */}
-                                <ListItemText
-                                    primary={player.name}
-                                    primaryTypographyProps={{
-                                        fontWeight: player.id === userId ? 'bold' : 'normal',
-                                        color: player.id === userId ? 'primary.main' : 'text.primary',
-                                        style: { wordBreak: 'break-word' }
-                                    }}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Paper>
-            </Box>
+                <BCard style={{ padding: 0 }}>
+                    <div style={{ padding: '14px 16px', borderBottom: '2px solid #000' }}>
+                        <h3 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>
+                            Jugadores ({players.length})
+                        </h3>
+                    </div>
+                    {players.map((player, i) => {
+                        const isHost = player.id === roomData.hostId;
+                        const isMe = player.id === userId;
+                        const canRemove = roomData.hostId === userId && !isMe && roomData.status === 'SETUP';
+                        const voteIcon = roomData.revealRequest?.status === 'pending' && !isHost
+                            ? player.vote === 'approved' ? '✓' : player.vote === 'denied' ? '✕' : '…'
+                            : null;
+                        return (
+                            <div key={player.id} style={{ borderTop: i === 0 ? 'none' : '2px solid #000', display: 'flex', alignItems: 'center', padding: '10px 16px', background: isMe ? '#000' : '#F5F5F0', gap: 10 }}>
+                                <span style={{ color: isHost ? '#00FF41' : (isMe ? '#fff' : '#000'), fontSize: '1rem' }}>{isHost ? '🏆' : '◦'}</span>
+                                <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.88rem', flex: 1, color: isMe ? '#fff' : '#000', fontWeight: isMe ? 700 : 400, wordBreak: 'break-word' }}>
+                                    {player.name}{isMe ? ' (tú)' : ''}
+                                </span>
+                                {voteIcon && <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.85rem', color: player.vote === 'approved' ? '#00FF41' : player.vote === 'denied' ? '#cc0000' : '#888' }}>{voteIcon}</span>}
+                                {canRemove && (
+                                    <button onClick={() => handleRemovePlayer(player.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cc0000', fontWeight: 900, fontSize: '1rem', lineHeight: 1 }}>✕</button>
+                                )}
+                            </div>
+                        );
+                    })}
+                </BCard>
+            </div>
         );
     };
 
@@ -920,62 +928,66 @@ const App = () => {
         const showVoteDialog = roomData.revealRequest?.status === 'pending' && me && !me.vote && me.id !== roomData.hostId;
 
         return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <div style={{ ...gap }}>
+                <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
                 {error && renderError()}
 
-                {/* CORRECCIÓN: flex container para título de sala */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-                    {/* CORRECCIÓN: permitir wrap y break-word para el nombre de sala */}
-                    <Typography variant="h5" component="h2" sx={{ flex: 1, wordBreak: 'break-word' }}>
-                        Sala de: <span style={{ fontWeight: 'bold' }}>{roomData.hostName}</span>
-                    </Typography>
-                    <Button onClick={handleLeaveRoom} variant="contained" color="error" size="small" startIcon={<Logout />} sx={{ flexShrink: 0 }}>Salir</Button>
-                </Box>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                    <div>
+                        <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.5, margin: '0 0 2px 0' }}>Sala de</p>
+                        <h2 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '1.2rem', textTransform: 'uppercase', margin: 0, wordBreak: 'break-word' }}>{roomData.hostName}</h2>
+                    </div>
+                    <BBtn variant="danger" onClick={handleLeaveRoom} style={{ flexShrink: 0, fontSize: '0.75rem', padding: '8px 14px' }}>✕ Salir</BBtn>
+                </div>
 
                 {roomData.status === 'SETUP' ? (
-                    <Paper elevation={3} sx={{ p: 4, textAlign: 'center', bgcolor: 'grey.100' }}>
-                        <CircularProgress sx={{ mb: 3 }} />
-                        <Typography variant="h4" component="h3" gutterBottom>Esperando al Anfitrión</Typography>
-                        <Typography variant="body1" color="text.secondary">El anfitrión está preparando la partida...</Typography>
-                    </Paper>
+                    <BCard style={{ textAlign: 'center', padding: '36px 24px' }}>
+                        <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '2.5rem', animation: 'blink 1s step-start infinite', display: 'inline-block' }}>█</span>
+                        <h3 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '1.3rem', textTransform: 'uppercase', margin: '14px 0 8px', letterSpacing: '-0.01em' }}>
+                            Esperando al Anfitrión
+                        </h3>
+                        <BTag>[ WAITING ]</BTag>
+                    </BCard>
                 ) : (<PlayerAssignment player={me} />)}
 
-                <Paper elevation={2} sx={{ p: 2 }}>
-                    <Typography variant="h6" component="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <People /> Jugadores ({players.length})
-                    </Typography>
-                    <List dense>
-                        {players.map(player => (
-                            <ListItem key={player.id}>
-                                <ListItemIcon>{player.id === roomData.hostId ? <EmojiEvents sx={{ color: 'orange' }} /> : <Group />}</ListItemIcon>
-                                {/* CORRECCIÓN: word-break para nombres largos en lista */}
-                                <ListItemText
-                                    primary={player.name}
-                                    primaryTypographyProps={{
-                                        fontWeight: player.id === userId ? 'bold' : 'normal',
-                                        color: player.id === userId ? 'primary.main' : 'text.primary',
-                                        style: { wordBreak: 'break-word' }
-                                    }}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Paper>
+                <BCard style={{ padding: 0 }}>
+                    <div style={{ padding: '14px 16px', borderBottom: '2px solid #000' }}>
+                        <h3 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>
+                            Jugadores ({players.length})
+                        </h3>
+                    </div>
+                    {players.map((player, i) => {
+                        const isHost = player.id === roomData.hostId;
+                        const isMe = player.id === userId;
+                        return (
+                            <div key={player.id} style={{ borderTop: i === 0 ? 'none' : '2px solid #000', display: 'flex', alignItems: 'center', padding: '10px 16px', background: isMe ? '#000' : '#F5F5F0', gap: 10 }}>
+                                <span style={{ color: isHost ? '#00FF41' : (isMe ? '#fff' : '#000'), fontSize: '1rem' }}>{isHost ? '🏆' : '◦'}</span>
+                                <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.88rem', flex: 1, color: isMe ? '#fff' : '#000', fontWeight: isMe ? 700 : 400, wordBreak: 'break-word' }}>
+                                    {player.name}{isMe ? ' (tú)' : ''}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </BCard>
 
-                <Dialog open={showVoteDialog} aria-labelledby="vote-dialog-title" aria-describedby="vote-dialog-description">
-                    <DialogTitle id="vote-dialog-title"><HowToVote sx={{ mr: 1, verticalAlign: 'middle' }} />Solicitud del Anfitrión</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="vote-dialog-description">
-                            El anfitrión ({roomData.hostName}) quiere ver las respuestas.<br /><br />
-                            **¿Autorizas esta acción?** (Se requiere aprobación unánime)
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions sx={{ p: 2 }}>
-                        <Button onClick={() => handlePlayerVote('denied')} variant="contained" color="error" autoFocus>Rechazar</Button>
-                        <Button onClick={() => handlePlayerVote('approved')} variant="contained" color="secondary">Aprobar</Button>
-                    </DialogActions>
-                </Dialog>
-            </Box>
+                {showVoteDialog && (
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: 16 }}>
+                        <div style={{ background: '#F5F5F0', border: '3px solid #000', padding: '28px 24px', width: '100%', maxWidth: 420 }}>
+                            <h3 style={{ fontFamily: '"Inter", sans-serif', fontWeight: 900, fontSize: '1.1rem', textTransform: 'uppercase', margin: '0 0 14px 0' }}>
+                                ✋ Solicitud del Anfitrión
+                            </h3>
+                            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.82rem', lineHeight: 1.6, margin: '0 0 20px 0' }}>
+                                <strong>{roomData.hostName}</strong> quiere ver las respuestas.<br />
+                                Se requiere aprobación unánime.
+                            </p>
+                            <div style={{ display: 'flex', gap: 10 }}>
+                                <BBtn variant="danger" onClick={() => handlePlayerVote('denied')} style={{ flex: 1, justifyContent: 'center' }}>✕ Rechazar</BBtn>
+                                <BBtn variant="primary" onClick={() => handlePlayerVote('approved')} style={{ flex: 1, justifyContent: 'center' }}>✓ Aprobar</BBtn>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         );
     };
 
@@ -992,42 +1004,27 @@ const App = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            {/* CORRECCIÓN: Layout Full Screen tipo App Moderna */}
-            <Box sx={{
-                minHeight: '100vh',
-                bgcolor: 'background.default',
-                display: 'flex',
-                flexDirection: 'column',
-                overflowX: 'hidden'
-            }}>
-                <AppBar position="sticky" elevation={0} sx={{ top: 0, zIndex: 1100 }}>
-                    <Toolbar sx={{ justifyContent: 'space-between' }}>
+            <div style={{ minHeight: '100vh', background: '#F5F5F0', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+                {/* BRUTALIST APPBAR */}
+                <header style={{ background: '#fff', borderBottom: '3px solid #000', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 54, position: 'sticky', top: 0, zIndex: 1100, flexShrink: 0 }}>
+                    <div style={{ width: 40 }}>
                         {view !== 'HOME' && (
-                            <IconButton edge="start" color="inherit" onClick={handleLeaveRoom} aria-label="home">
-                                <Home />
-                            </IconButton>
+                            <button onClick={handleLeaveRoom} aria-label="home" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: '"Space Mono", monospace', fontWeight: 700, fontSize: '1.1rem', padding: 0 }}>
+                                ←
+                            </button>
                         )}
-                        <Typography variant="h6" component="h1" sx={{ fontWeight: '800', letterSpacing: '-0.5px' }}>
-                            IMPOSTOR
-                        </Typography>
-                        {/* Placeholder para balancear el layout o settings futuro */}
-                        <Box width={40} />
-                    </Toolbar>
-                </AppBar>
+                    </div>
+                    <span style={{ fontFamily: '"Space Mono", monospace', fontWeight: 700, fontSize: '1.05rem', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                        IMPOSTOR
+                    </span>
+                    <div style={{ width: 40 }} />
+                </header>
 
-                <Container maxWidth="sm" sx={{
-                    flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    py: 4,
-                    px: { xs: 2, sm: 3 }, // Menos padding en móviles
-                    gap: 3
-                }}>
-                    <Box component="main" sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        {renderView()}
-                    </Box>
-                </Container>
-            </Box>
+                {/* MAIN CONTENT */}
+                <main style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 600, width: '100%', margin: '0 auto', padding: '24px 16px', boxSizing: 'border-box' }}>
+                    {renderView()}
+                </main>
+            </div>
         </ThemeProvider>
     );
 };
